@@ -16,7 +16,7 @@ export default function LandingHeader() {
         <div className="flex flex-col max-w-screen overflow-hidden sticky top-0 z-[1000]">
             <div className="h-[80px] bg-custom-bpink flex items-center justify-between py-[4rem] px-[2rem]">
                 <div className="flex gap-2 items-center">
-                    <Image width={643} height={223} src={'/assets/logo/longnobg.png'} className="h-16 w-full"/>
+                    <img src={'/assets/logo/longnobg.png'} className="h-16 w-full"/>
                 </div>
 
                 <div>
@@ -31,9 +31,6 @@ export default function LandingHeader() {
                         </NavigationMenuList>
                     </NavigationMenu>
                 </div>
-            </div>
-            <div className="h-[104px] bg-[url('/assets/waves/header.svg')] bg-cover">
-
             </div>
         </div>
     )
