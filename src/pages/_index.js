@@ -5,7 +5,6 @@ import SparklesText from "@/components/magicui/sparkles-text";
 import { VelocityScroll } from "@/components/magicui/scroll-based-velocity";
 import TextReveal from "@/components/magicui/text-reveal";
 import crypto from "crypto";
-import { longString } from "@/lib/longstring";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
