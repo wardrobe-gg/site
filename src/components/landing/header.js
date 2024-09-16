@@ -22,8 +22,8 @@ export default function LandingHeader() {
                 </div>
 
                 <div className="flex gap-2">
-                    <Link href={'/capes/catalog/browse'}><Button>Cloak Catalog</Button></Link>
-                    <Link href={'/capes/community/browse'}><Button>Community Capes</Button></Link>
+                    <Link href={'/capes/catalog/'}><Button>Cloak Catalog</Button></Link>
+                    <Link href={'/capes/community/'}><Button>Community Capes</Button></Link>
                 </div>
             </div>
         </div>
