@@ -191,7 +191,7 @@ const CapeItem = React.memo(({ item, image, elytra, loading }) => {
     const [useElytra, setUseElytra] = useState(false);
 
     return (
-        <Link href={`/catalog/${item.id}`} className="group h-fit col-span-1">
+        <Link href={`/capes/${item.id}`} className="group h-fit col-span-1">
             <div className="bg-zinc-900 border-2 rounded-lg overflow-hidden transition-all duration-100 hover:border-custom-brass/90">
                 <div className="h-[30vh] bg-[url('/assets/skinBackground/image.webp')] bg-cover overflow-hidden flex items-center justify-center">
                     {loading ? (
