@@ -18,7 +18,7 @@ export default function LandingHeader() {
         <div className="flex flex-col max-w-screen overflow-hidden sticky top-0 z-[1000] pb-[2rem]">
             <div className="h-[80px] bg-custom-bpink flex items-center justify-between py-[4rem] px-[2rem]">
                 <div className="flex gap-2 items-center">
-                    <img src={'/assets/logo/longnobg.png'} className="h-16 w-full"/>
+                    <Image src={'/assets/logo/longnobg.png'} width="1102" height="404" className="h-16 w-fit"/>
                 </div>
 
                 <div className="flex gap-2">
