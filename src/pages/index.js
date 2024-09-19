@@ -34,7 +34,7 @@ export default function ComingSOon() {
                 <div className="w-full flex flex-col justify-start items-start lg:items-end p-12 lg:p-4 relative z-10">
                         <h1 className="font-mc text-4xl lg:text-6xl text-left lg:text-right">Coming Soon</h1>
                         <span className="font-basically text-xl lg:text-3xl lg:max-w-[60%] text-left lg:text-right">
-                            We're so glad that you're excited for the future of <span className="underline">wardrobe.gg</span>, but you've come too early.
+                            We&apos;re so glad that you&apos;re excited for the future of <span className="underline">wardrobe.gg</span>, but you&apos;ve come too early.
                         </span>
                 </div>
 
