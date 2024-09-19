@@ -20,6 +20,7 @@ module.exports = {
       fontFamily: {
         'mc': ['Minecraft', 'sans-serif'],
         'blackentina-i': ['Blackentina', 'sans-serif'],
+        'basically': ['Basically', 'sans-serif'],
       },
       dropShadow: {
         '4xl': '0 35px 35px rgba(0, 0, 0, 0.25)',
