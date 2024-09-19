@@ -1,56 +1,45 @@
-import { Button } from "@/components/ui/button";
-import { faDiscord } from "@fortawesome/free-brands-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Head from "next/head";
+import LandingHeader from "@/components/landing/header";
 import Image from "next/image";
-import Link from "next/link";
 
-export default function ComingSoon() {
+export default function ComingSOon() {
     return (
         <>
-            <Head>
-                <title>Coming Soon - Wardrobe</title>
-                <meta charSet="UTF-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <link rel="icon" type="image/png" href="/assets/logo/logonobg.png" />
-            </Head>
-            <div className="h-screen w-screen flex justify-center items-center bg-gradient-to-b from-custom-bpink to-custom-lpink overflow-hidden">
-                <div className="flex flex-col items-center h-[70vh] gap-[12rem]">
-                    <Image 
-                        src={'/assets/logo/longnobg.png'} 
-                        width="1101" 
-                        height="403"
-                        className="w-[80vw] md:w-[50vw] lg:w-[20vw]"
-                        alt="Wardrobe Logo"
-                    />
-                    <div className="h-[20vh] flex flex-col gap-4 items-center justify-start px-[4rem]">
-                        <h1 className="text-6xl font-extrabold text-center font-blackentina-i italic">Coming Soon</h1>
+            <div className="w-screen overflow-hidden">
+                <LandingHeader />
+                <div className="h-[60vh] flex z-[10]">
+                    <div className="w-full lg:w-[45%] relative flex flex-col justify-center"> {/* Set relative position to contain absolutely positioned child */}
+                        <div className="mt-auto h-[30%] w-full">
+                        </div>
+                        <div className="mt-auto bg-gradient-to-t from-custom-bpink to-black h-[70%] w-full z-0">
+                        </div>
+                        <div className="absolute top-0 left-0 z-10 w-full h-full flex justify-end items-end">
+                            <Image src={'/assets/logo/di-logo.png'} width="589" height="589" className="hidden lg:block translate-x-[50%] h-[55vh] w-[55vh] select-none" draggable="false" />
+                            <Image src={'/assets/characters/character1.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] -bottom-[1.92vh] translate-x-[-4vw] lg:translate-x-[4vw]" />
 
-                        <span className="text-xl text-center font-semibold">
-                            We&apos;re so glad that you&apos;re excited for the future of wardrobe.gg, but you&apos;ve come too early.
-                        </span>
+                        </div>
+                        <div className="absolute top-0 left-0 z-[2000] w-full h-full flex justify-start items-end translate-y-[-2%]">
+                            <Image src={'/assets/logo/cut-side.png'} width="589" height="589" className="h-fit w-fit scale-[140%] select-none" draggable="false" />
+                            <Image src={'/assets/logo/cut-btm.png'} width="589" height="589" className="h-fit w-fit -ml-[2rem] scale-[140%] select-none" draggable="false" />
+                            <Image src={'/assets/characters/character2.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] lg:translate-x-[8vw]" />
 
-                        <Link href={'https://discord.gg/XB5Hk3EnDU'} target="_blank">
-                            <Button>
-                                <FontAwesomeIcon icon={faDiscord} className="mr-2 size-4" /> Join us on Discord
-                            </Button>
-                        </Link>
+                        </div>
                     </div>
+                    <div className="w-[55%] bg-black hidden lg:block">
+                        <div className="absolute top-0 left-0 z-0 w-full h-full flex justify-end items-end">
+                            <Image src={'/assets/logo/lcut-btm-side.png'} width="866" height="619" className="select-none" draggable="false" />
+                        </div>
+                    </div>
+                </div>
 
-                    <Image 
-                        src={'/assets/comingSoon/buffoonspoon.png'} 
-                        height="1000" 
-                        width="2000" 
-                        className="w-fit self-end drop-shadow-2xl animate-bounce"
-                        alt="Buffoon Spoon Image"
-                    />
-                    <Image 
-                        src={'/assets/comingSoon/shrimple.png'} 
-                        height="1000" 
-                        width="2000" 
-                        className="w-[15vw] absolute self-start rotate-[10deg] drop-shadow-4xl"
-                        alt="Shrimple Image"
-                    />
+                <div className="w-full flex flex-col justify-start items-start lg:items-end p-12 lg:p-4 relative z-10">
+                        <h1 className="font-mc text-4xl lg:text-6xl text-left lg:text-right">Coming Soon</h1>
+                        <span className="font-basically text-xl lg:text-3xl lg:max-w-[60%] text-left lg:text-right">
+                            We're so glad that you're excited for the future of <span className="underline">wardrobe.gg</span>, but you've come too early.
+                        </span>
+                </div>
+
+                <div className="absolute bottom-0 right-0 z-0 lg:hidden overflow-hidden">
+                    <Image src={'/assets/logo/lcut-btm-side.png'} width="866" height="619" className="translate-x-[20%] translate-y-[20%]"/>
                 </div>
             </div>
         </>

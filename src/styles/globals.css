@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 0%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -32,7 +32,7 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -70,7 +70,7 @@
 
 @font-face {
   font-family: 'Minecraft';
-  src: url('/fonts/Minecraft.ttf') format('truetype');
+  src: url('/fonts/Ranyth5x_BIG.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -82,3 +82,9 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Basically';
+  src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
