@@ -6,7 +6,32 @@ export default function ComingSOon() {
     return (
         <>
             <Head>
+            {/* General Meta Tags */}
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+                <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
+                {/* SEO Meta Tags */}
+                <meta name="title" content="Wardrobe.gg - Coming Soon"/>
+                <meta name="description" content="Wardrobe.gg is a Minecraft cosmetic service offering free cloaks and premium cosmetics. Stay tuned for our official launch!"/>
+                <meta name="keywords" content="Minecraft, cloaks, cosmetics, Minecraft skins, Minecraft capes, free Minecraft cloaks, paid Minecraft cosmetics, Wardrobe.gg"/>
+                <meta name="robots" content="index, follow"/>
+
+                {/* Open Graph / Facebook */}
+                <meta property="og:type" content="website"/>
+                <meta property="og:url" content="https://wardrobe.gg/"/>
+                <meta property="og:title" content="Wardrobe.gg - Coming Soon"/>
+                <meta property="og:description" content="Wardrobe.gg isn't just another minecraft cosmetic service; our cloaks are completely free."/>
+                <meta property="og:image" content="https://wardrobe.gg/assets/coming-soon.jpg"/>
+
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+                <meta property="twitter:url" content="https://wardrobe.gg/" />
+                <meta property="twitter:title" content="Wardrobe.gg - Coming Soon" />
+                <meta property="twitter:description" content="Minecraft cloaks: free, forever. Coming soon." />
+                <meta property="twitter:image" content="https://wardrobe.gg/assets/coming-soon.jpg" />
+
+                <title>Wardrobe.gg - Minecraft Cosmetics | Coming Soon</title>
             </Head>
             <div className="w-screen overflow-hidden">
                 <LandingHeader />
