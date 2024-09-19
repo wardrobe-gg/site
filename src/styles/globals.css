@@ -73,6 +73,7 @@
   src: url('/fonts/Ranyth5x_BIG.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -80,6 +81,7 @@
   src: url('/fonts/Blackentina 4F-Italic.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -87,4 +89,5 @@
   src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
