@@ -41,7 +41,7 @@ export default function ComingSOon() {
             <div className="w-screen overflow-hidden">
                 <LandingHeader />
                 <div className="h-[60vh] flex z-[10]">
-                    <div className="w-full lg:w-[45%] relative flex flex-col justify-center"> {/* Set relative position to contain absolutely positioned child */}
+                    <div className="w-full lg:w-[45%] relative flex flex-col justify-center overflow-hidden"> {/* Set relative position to contain absolutely positioned child */}
                         <div className="mt-auto h-[30%] w-full">
                         </div>
                         <div className="mt-auto bg-gradient-to-t from-custom-bpink to-black h-[70%] w-full z-0">
