@@ -47,14 +47,14 @@ export default function ComingSOon() {
                         <div className="mt-auto bg-gradient-to-t from-custom-bpink to-black h-[70%] w-full z-0">
                         </div>
                         <div className="absolute top-0 left-0 z-10 w-full h-full flex justify-end items-end">
-                            <Image src={'/assets/logo/di-logo.png'} width="589" height="589" className="hidden lg:block translate-x-[50%] h-[55vh] w-[55vh] select-none" draggable="false" loading="eager"  />
-                            <Image src={'/assets/characters/character1.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] -bottom-[1.92vh] translate-x-[-4vw] lg:translate-x-[4vw]" loading="eager" />
+                            <Image src={'/assets/logo/di-logo.png'} width="589" height="589" className="hidden lg:block translate-x-[50%] h-[55vh] w-[55vh] select-none" alt={''} draggable="false" loading="eager"  />
+                            <Image src={'/assets/characters/character1.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] -bottom-[1.92vh] translate-x-[-4vw] lg:translate-x-[4vw]" alt={''} loading="eager" />
 
                         </div>
                         <div className="absolute top-0 left-0 z-[2000] w-full h-full flex justify-start items-end translate-y-[-2%]">
-                            <Image src={'/assets/logo/cut-side.png'} width="589" height="589" className="h-fit w-fit scale-[140%] select-none" draggable="false" loading="eager"  />
-                            <Image src={'/assets/logo/cut-btm.png'} width="589" height="589" className="h-fit w-fit -ml-[2rem] scale-[140%] select-none" draggable="false" loading="eager"  />
-                            <Image src={'/assets/characters/character2.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] lg:translate-x-[8vw]" loading="eager" />
+                            <Image src={'/assets/logo/cut-side.png'} width="589" height="589" className="h-fit w-fit scale-[140%] select-none" draggable="false" alt={''} loading="eager"  />
+                            <Image src={'/assets/logo/cut-btm.png'} width="589" height="589" className="h-fit w-fit -ml-[2rem] scale-[140%] select-none" draggable="false" loading="eager" alt={''}  />
+                            <Image src={'/assets/characters/character2.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] lg:translate-x-[8vw]" loading="eager" alt={''} />
 
                         </div>
                     </div>
@@ -89,7 +89,7 @@ export default function ComingSOon() {
                 </div>
 
                 <div className="absolute bottom-0 right-0 z-0 lg:hidden overflow-hidden">
-                    <Image src={'/assets/logo/lcut-btm-side.png'} width="866" height="619" className="translate-x-[20%] translate-y-[20%]" loading="eager" />
+                    <Image src={'/assets/logo/lcut-btm-side.png'} width="866" height="619" className="translate-x-[20%] translate-y-[20%]" loading="eager" alt={''} />
                 </div>
             </div>
         </>
