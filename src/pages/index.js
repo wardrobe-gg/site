@@ -72,7 +72,7 @@ export default function ComingSOon() {
                     </div>
                 </div>
 
-                <div className="w-full flex flex-col justify-start items-start lg:items-end p-12 lg:p-4 lg:pr-[3rem] relative z-10">
+                <div className="w-full flex flex-col justify-start items-start lg:items-end lg:p-8 lg:p-4 lg:pr-[3rem] relative z-10">
                         <h1 className="font-mc text-4xl lg:text-5xl text-left lg:text-right lg:w-[52%] xl:w-[40%]">Customise like never before</h1>
                         <span className="font-basically text-xl lg:text-2xl lg:max-w-[60%] xl:max-w-[40%] text-left lg:text-right">
                             We&apos;re so glad that you&apos;re excited for the future of <span className="underline">wardrobe.gg</span>, but you&apos;ve come too early.
