@@ -46,15 +46,15 @@ export default function ComingSOon() {
                         </div>
                         <div className="mt-auto bg-gradient-to-t from-custom-bpink to-black h-[70%] w-full lg:w-[68%] z-0">
                         </div>
-                        <div className="absolute top-0 left-0 z-10 w-full lg:w-[69%] h-full flex justify-end items-end">
+                        <div className="absolute top-0 left-0 z-10 w-full lg:w-[69%] h-full flex justify-end items-end gap-[4rem]">
                             <Image src={'/assets/logo/butchered-di-logo.png'} width="589" height="589" className="hidden xl:block translate-x-[49.75%] h-[55vh] w-[55vh] select-none" alt={''} draggable="false" loading="eager"  />
                             <Image src={'/assets/characters/character1.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] -bottom-[1.92vh] translate-x-[-4vw] lg:translate-x-[3.5vw]" alt={''} loading="eager" />
-                            <Image src={'/assets/characters/character2.png'} width="298" height="512" className="h-[80%] hidden absolute lg:block w-fit aspect-[298/512] lg:-translate-x-[12vw] origin-center rotate-[200deg] -scale-x-100" loading="eager" alt={''} />
+                            <Image src={'/assets/characters/character2.png'} width="298" height="512" className="h-[80%] hidden absolute lg:block w-fit aspect-[298/512] lg:-translate-x-[12vw] origin-center rotate-[200deg] -scale-x-100 mr-[5rem]" loading="eager" alt={''} />
 
                         </div>
-                        <div className="absolute top-0 left-0 z-[0] w-full h-full flex justify-start items-end lg:pl-[8rem] translate-y-[-2%]">
-                            <Image src={'/assets/logo/uncut.png'} width="589" height="589" className="h-fit w-fit scale-[200%] select-none -translate-x-[2vw] -translate-y-6" draggable="false" alt={''} loading="eager"  />
-                            <Image src={'/assets/logo/cut-btm.png'} width="589" height="589" className="h-fit w-fit scale-[200%] -ml-[1rem] select-none" draggable="false" loading="eager" alt={''}  />
+                        <div className="absolute top-0 left-0 z-[0] w-full h-full flex justify-start items-end pl-[8vw] translate-y-[-2%]">
+                            <Image src={'/assets/logo/uncut.png'} width="589" height="589" className="h-fit w-fit select-none -translate-x-[2vw] translate-y-[4rem]" draggable="false" alt={''} loading="eager"  />
+                            <Image src={'/assets/logo/cut-btm.png'} width="589" height="589" className="h-fit w-fit scale-[200%] -ml-[1rem] select-none hidden xl:block" draggable="false" loading="eager" alt={''}  />
                             <Image src={'/assets/characters/character2.png'} width="298" height="512" className="h-[80%] absolute w-fit aspect-[298/512] lg:translate-x-[8vw] lg:hidden" loading="eager" alt={''} />
 
                         </div>
@@ -72,12 +72,12 @@ export default function ComingSOon() {
                     </div>
                 </div>
 
-                <div className="w-full flex flex-col justify-start items-start lg:items-end p-12 lg:p-4 lg:pr-[3rem] relative z-10">
-                        <h1 className="font-mc text-4xl lg:text-5xl text-left lg:text-right lg:w-1/2 xl:w-1/3">Customise like never before</h1>
-                        <span className="font-basically text-xl lg:text-2xl lg:max-w-[40%] text-left lg:text-right">
+                <div className="w-full flex flex-col justify-start items-start lg:items-end p-8 lg:p-4 lg:pr-[3rem] relative z-10">
+                        <h1 className="font-mc text-4xl lg:text-5xl text-left lg:text-right lg:w-[52%] xl:w-[40%]">Customise like never before</h1>
+                        <span className="font-basically text-xl lg:text-2xl lg:max-w-[60%] xl:max-w-[40%] text-left lg:text-right">
                             We&apos;re so glad that you&apos;re excited for the future of <span className="underline">wardrobe.gg</span>, but you&apos;ve come too early.
                         </span>
-                        <div className="w-full lg:w-1/2 flex lg:justify-end gap-[3rem] pt-[1.5rem] pr-[1rem] items-center">
+                        <div className="w-full lg:w-1/2 flex lg:justify-end gap-[6vw] lg:gap-[3rem] pt-[1.5rem] pr-[1rem] items-center">
                             <Link href={'https://x.com/wardrobegg'} target="_blank"><FontAwesomeIcon icon={faXTwitter} className="text-[2.15rem]" /></Link>
                             <Link href={'https://tiktok.com/@wardrobe.gg'} target="_blank"><FontAwesomeIcon icon={faTiktok} className="text-[2.15rem]" /></Link>
                             <Link href={'https://instagram.com/wardrobe.gg'} target="_blank"><FontAwesomeIcon icon={faInstagram} className="text-[2.25rem]" /></Link>
