@@ -77,7 +77,7 @@ export default function ComingSOon() {
                         <span className="font-basically text-xl lg:text-2xl lg:max-w-[60%] xl:max-w-[40%] text-left lg:text-right">
                             We&apos;re so glad that you&apos;re excited for the future of <span className="underline">wardrobe.gg</span>, but you&apos;ve come too early.
                         </span>
-                        <div className="w-full lg:w-1/2 flex lg:justify-end gap-[3rem] pt-[1.5rem] pr-[1rem] items-center">
+                        <div className="w-full lg:w-1/2 flex lg:justify-end gap-[6vw] lg:gap-[3rem] pt-[1.5rem] pr-[1rem] items-center">
                             <Link href={'https://x.com/wardrobegg'} target="_blank"><FontAwesomeIcon icon={faXTwitter} className="text-[2.15rem]" /></Link>
                             <Link href={'https://tiktok.com/@wardrobe.gg'} target="_blank"><FontAwesomeIcon icon={faTiktok} className="text-[2.15rem]" /></Link>
                             <Link href={'https://instagram.com/wardrobe.gg'} target="_blank"><FontAwesomeIcon icon={faInstagram} className="text-[2.25rem]" /></Link>
