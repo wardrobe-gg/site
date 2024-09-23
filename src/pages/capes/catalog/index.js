@@ -14,6 +14,7 @@ import debounce from "lodash/debounce";
 import { Switch } from "@/components/ui/switch";
 import { Toggle } from "@/components/ui/toggle";
 import Image from "next/image"
+import { NewHeader } from "@/components/main/header";
 
 export default function BrowseCapes() {
     const [filter, setFilter] = useState(['4avkinm8p2qorvg']);
@@ -158,7 +159,7 @@ export default function BrowseCapes() {
 
     return (
         <>
-            <LandingHeader />
+            <NewHeader />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-12 items-start">
                 <div className="col-span-1 md:col-span-2 lg:col-span-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pt-8">
                     <div className="col-span-5">
