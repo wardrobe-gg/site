@@ -11,7 +11,7 @@ export default function ComingSOon() {
         <>
             <Head>
             {/* General Meta Tags */}
-                <meta charset="UTF-8" />
+                <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
                 <meta name="theme-color" content="#FF3475" />
@@ -87,6 +87,10 @@ export default function ComingSOon() {
                                 </Button>
                             </Link>
                         </div>
+                </div>
+
+                <div className="absolute bottom-[2em] left-[2rem]">
+                    <span className="text-white font-basically">NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT</span>
                 </div>
 
                 <div className="absolute bottom-0 right-0 z-0 lg:hidden overflow-hidden">
