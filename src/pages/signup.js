@@ -14,9 +14,10 @@ export default function Login() {
 
     const handleSignup = async () => {
         const authData = await pb.collection('users').authWithOAuth2({provider: 'microsoft'});
-
+        console.log(authData)
         const response = await axios.post('/api/auth/completeSignup', {
             msaccess: authData.meta.accessToken,
+            msrefresh: authData.meta.refreshToken,
             pbid: authData.record.id
         }, {
             headers: {
