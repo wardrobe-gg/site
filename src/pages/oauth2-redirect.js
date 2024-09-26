@@ -9,31 +9,37 @@ export default function Oauth2Redirect() {
     useEffect(() => {
         async function sortAuth() {
             if (requestSent) return; // Prevent duplicate requests
-            const params = (new URL(window.location)).searchParams;
-            const provider = JSON.parse(localStorage.getItem('provider'));
-
-            if (provider.state !== params.get('state')) {
-                throw new Error("State parameters don't match.");
-            }
-
-            if (params.get('error')) {
-                window.close();
-            }
-
-
             try {
-                await axios.post('/api/auth/completeSignup', {
-                    code: params.get('code'),
-                    code_verifier: localStorage.getItem('code_verifier'),
-                    state: params.get('state')
-                });
-
-                setRequestSent(true); // Set the flag after the request is successful
-
-                window.close();
-            } catch (e) {
-                console.error(e);
+                const params = (new URL(window.location)).searchParams;
+                const provider = JSON.parse(localStorage.getItem('provider'));
+    
+                if (provider.state !== params.get('state')) {
+                    throw new Error("State parameters don't match.");
+                }
+    
+                if (params.get('error')) {
+                    window.close();
+                }
+    
+    
+                try {
+                    await axios.post('/api/auth/completeSignup', {
+                        code: params.get('code'),
+                        code_verifier: localStorage.getItem('code_verifier'),
+                        state: params.get('state')
+                    });
+    
+                    setRequestSent(true); // Set the flag after the request is successful
+    
+                    window.close();
+                } catch (e) {
+                    console.error(e);
+                    alert('An error occured. Open the console and show Alexx')
+                }
             }
+            catch (e)
+            {console.error(e); alert('An error occured. Open the console and show Alexx')} 
+            
         }
 
         if (typeof window !== 'undefined') {
