@@ -5,72 +5,92 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import axios from "axios"
 import Pocketbase from "pocketbase";
+import { useEffect, useState } from "react"
+import { Loader2, Loader2Icon } from "lucide-react"
+
 
 export default function Login() {
     const router = useRouter();
+    const [isClicked, setIsClicked] = useState(false);
+    const [accountCreated, setAccountCreated] = useState(false);
+
+    const [accountWaiting, setAccountWaiting] = useState({});
+    const [loadingText, setLoadingText] = useState('Creating account...')
+
     const handleSignup = async () => {
         try {
             const pb = new Pocketbase("https://db.wardrobe.gg");
-            
-            // Fetch Microsoft OAuth2 token from PocketBase
-            const authData = await pb.collection('users').authWithOAuth2({ provider: 'microsoft' });
-            const msaccess = authData.meta.accessToken;
-            const pbid = authData.record.id;
+            const authMethods = await pb.collection('fauxUsers').listAuthMethods();
+    
 
+            const codeChallenge = authMethods.authProviders[0].codeChallenge
+            const codeChallengeMethod = authMethods.authProviders[0].codeChallengeMethod
+            const codeVerifier = authMethods.authProviders[0].codeVerifier
+    
+            // Save codeVerifier in localStorage for use during token exchange
+            localStorage.setItem('code_verifier', codeVerifier);
+            localStorage.setItem('provider', JSON.stringify(authMethods.authProviders[0]));
+    
+            let scope = "XboxLive.signin XboxLive.offline_access User.Read";
+            let authURL = (authMethods.authProviders[0].authUrl).replace('&scope=User.Read', `&scope=${encodeURIComponent(scope)}`) + encodeURIComponent('http://localhost:3000/oauth2-redirect');
+    
+            window.open(authURL, '_blank');
 
-            console.log(authData);
+            const requestSignupWaitState = await axios.post('/api/auth/signupWaitState', {
+                state: authMethods.authProviders[0].state,
+                codeChallenge: codeChallenge
+            })
 
-            
-            // Step 1: Xbox Live Authentication
-            const xboxLiveRequest = await axios.post('https://user.auth.xboxlive.com/user/authenticate', {
-                "Properties": {
-                    "AuthMethod": "RPS",
-                    "SiteName": "user.auth.xboxlive.com",
-                    "RpsTicket": `d=${msaccess}`
-                },
-                "RelyingParty": "http://auth.xboxlive.com",
-                "TokenType": "JWT"
-            }, {
-                headers: {
-                    "Content-Type": 'application/json',
-                    "Accept": 'application/json'
+            console.log(requestSignupWaitState.data)
+
+            setIsClicked(true);
+
+            await pb.collection('signupWaiting').subscribe(requestSignupWaitState.data.id, function (e) {
+                if (e.action === 'update') {
+                    if (e.record.relatedAccount) {
+                        setAccountCreated(true);
+                        setAccountWaiting(e.record);
+                        pb.collection('signupWaiting').unsubscribe(requestSignupWaitState.data.id);
+                    }
                 }
-            });
+            })
 
-            const xbltoken = xboxLiveRequest.data.Token;
-            const xbluserhash = xboxLiveRequest.data.DisplayClaims.xui.uhs;
-
-            // Step 2: XSTS Authorization
-            const xstsRequest = await axios.post('https://xsts.auth.xboxlive.com/xsts/authorize', {
-                "Properties": {
-                    "SandboxId": "RETAIL",
-                    "UserTokens": [
-                        xbltoken
-                    ]
-                },
-                "RelyingParty": "rp://api.minecraftservices.com/",
-                "TokenType": "JWT"
-            }, {
-                headers: {
-                    "Content-Type": 'application/json',
-                    "Accept": 'application/json'
-                }
-            });
-
-            const xstsToken = xstsRequest.data.Token;
-
-            // Step 3: Send xbluserhash and xstsToken to server to continue
-            const response = await axios.post('/api/auth/completeSignup', {
-                xbluserhash,
-                xstsToken,
-                pbid
-            });
-
-            console.log(response.data);
         } catch (error) {
             console.error('Error during signup:', error);
         }
     };
+
+    useEffect(() => {
+        async function login() {
+            let provider = JSON.parse(localStorage.getItem('provider'));
+
+            const requestSAT = await axios.post('/api/auth/requestSATfromSignup', {
+                codeChallenge: provider.codeChallenge,
+                waitingId: accountWaiting.id,
+                relatedAccountId: accountWaiting.relatedAccount,
+                state: provider.state
+            })
+
+            setLoadingText('Logging in...')
+            
+            const requestSession = await axios.post('/api/auth/requestSession', {
+                signedSAT: requestSAT.data.signedSAT
+            })
+
+            if (requestSession.status === 200) {
+                localStorage.removeItem('provider');
+                localStorage.removeItem('code_verifier');
+                localStorage.setItem('accountsInfo', requestSession.data.accounts)
+                router.push('/')
+            }
+            else {
+                alert('An error occured.')
+            }
+        }
+        if (accountCreated === true){
+            login();
+        }
+    }, [accountCreated])
 
     return (
         <main className="grid grid-cols-12">
@@ -86,14 +106,19 @@ export default function Login() {
                     </p>
                 </div>
                 <div className="grid gap-4 w-1/2">
-                    <Button type="submit" className="w-full" onClick={handleSignup}>
-                        <FontAwesomeIcon icon={faMicrosoft} className="mr-2" />
-                        Continue with Microsoft
+                    <Button type="submit" className="w-full" onClick={handleSignup} disabled={isClicked}>
+                        {isClicked ? 
+                        <>
+                            <Loader2 className="mr-2 animate-spin" /> {loadingText}
+                        </> : <>
+                            <FontAwesomeIcon icon={faMicrosoft} className="mr-2" />
+                            Continue with Microsoft
+                        </>}
                     </Button>
                 </div>
                 <div className="text-center text-sm dark:text-zinc-300">
                     Already have an account?{" "}
-                    <Link href="/auth/signup" className="underline">
+                    <Link href="/login" className="underline">
                         Login
                     </Link>
                 </div>
