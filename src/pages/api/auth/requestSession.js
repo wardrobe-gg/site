@@ -93,6 +93,9 @@ export default async function requestSession(req, res) {
             user: satRecord.user // Associate session with the user
         });
 
+        if (!satRecord.user) {
+            return res.status(403).json({message: 'SAT INVALID'});
+        }
         // Push the new session into the sessions array
         sessions.push({
             sessionID: sessionRecord.id, // Store the session ID

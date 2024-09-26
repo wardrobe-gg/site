@@ -28,6 +28,10 @@ export default async function requestSATfromSignup(req, res) {
 
     await pb.collection('signupWaiting').delete(waitingId);
 
+    if (!relatedAccountId) {
+        return res.status(403).json({ message: 'Mismatched account.' });
+    }
+
     // Generate SAT
     const SAT = crypto.randomBytes(256).toString('hex');
 
