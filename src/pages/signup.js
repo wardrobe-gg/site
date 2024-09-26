@@ -32,7 +32,7 @@ export default function Login() {
             localStorage.setItem('provider', JSON.stringify(authMethods.authProviders[0]));
     
             let scope = "XboxLive.signin XboxLive.offline_access User.Read";
-            let authURL = (authMethods.authProviders[0].authUrl).replace('&scope=User.Read', `&scope=${encodeURIComponent(scope)}`) + encodeURIComponent('http://localhost:3000/oauth2-redirect');
+            let authURL = (authMethods.authProviders[0].authUrl).replace('&scope=User.Read', `&scope=${encodeURIComponent(scope)}`) + encodeURIComponent('https://wardrobe.gg/oauth2-redirect');
     
             window.open(authURL, '_blank');
 
