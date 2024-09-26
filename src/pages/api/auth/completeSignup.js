@@ -26,7 +26,7 @@ export default async function completeSignup(req, res) {
                 scope: 'XboxLive.signin XboxLive.offline_access openid email profile',
                 code: code,
                 grant_type: 'authorization_code',
-                redirect_uri: 'http://localhost:3000/oauth2-redirect',
+                redirect_uri: 'https://wardrobe.gg/oauth2-redirect',
                 code_verifier: code_verifier
             }),
             {
