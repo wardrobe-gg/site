@@ -34,7 +34,7 @@ export default function Oauth2Redirect() {
                     window.close();
                 } catch (e) {
                     console.error(e);
-                    alert('An error occured. Open the console and show Alexx')
+                    window.close();
                 }
             }
             catch (e)

@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -12,16 +11,17 @@ import {
     NavigationMenuTrigger,
     NavigationMenuViewport,
     navigationMenuTriggerStyle
-  } from "@/components/ui/navigation-menu"
+} from "@/components/ui/navigation-menu"
+import { useEffect, useState } from "react";
+import Cart from "./Cart";
 
-  
 export default function MainHeader() {
     return (
         <div className="h-[10vh] w-full bg-black flex justify-between items-end border-b sticky top-0 lg:mb-[4rem] px-4 lg:px-[8rem]">
             <div className="flex gap-8 h-full w-full items-center">
                 <Link href={'/'}>Home</Link>
                 <Link href={'/'}>Store</Link>
-                <Link href={'/'}>Compatiability</Link>
+                <Link href={'/'}>Compatibility</Link>
                 <Link href={'/'}>FAQ</Link>
             </div>
             <Image src={'/assets/logo/longnobg.png'} width="1102" height="404" className="h-full w-fit translate-y-[35%]" />
@@ -31,11 +31,33 @@ export default function MainHeader() {
                 </Button>
             </div>
         </div>
-    )
+    );
 }
 
-
 export function NewHeader() {
+    const [information, setInformation] = useState({});
+
+    useEffect(() => {
+        const updateInformation = () => {
+            let information = {
+                isLoggedIn: (localStorage.getItem('activeAccount')) ? true : false,
+                activeAccountUsername: JSON.parse(localStorage.getItem('activeAccount'))?.username
+            }
+            setInformation(information)
+        };
+
+        // Update information initially
+        updateInformation()
+
+        // Set up an interval to check for localStorage changes
+        const interval = setInterval(() => {
+            updateInformation();
+        }, 100);
+
+        return () => clearInterval(interval);
+    }, []);
+
+
     return (
         <div className="h-[10vh] w-full bg-black flex justify-between items-end border-b sticky top-0 lg:mb-[4rem] px-4 lg:px-[8rem] z-[100]">
             <div className="flex gap-8 h-full w-full items-center">
@@ -44,106 +66,45 @@ export function NewHeader() {
                         <NavigationMenuItem>
                             <Link href="/" legacyBehavior passHref>
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                Home
+                                    Home
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>Capes</NavigationMenuTrigger>
-                            <NavigationMenuContent className="p-4 flex gap-4">
-                                <NavigationMenuLink>
-                                    <Link href={'/capes/catalog'}>
-                                        <div className="w-[10rem] h-full bg-gradient-to-b from-custom-bping-d to-custom-bpink p-6 rounded-sm flex flex-col gap-4 justify-center items-center">
-                                            <Image src={'/assets/characters/cloakicon.png'} width="500" height="500" className="h-[6rem] w-[12rem] object-contain"/>
-                                            <p className="whitespace-nowrap text-lg font-mc text-center">Official</p>
-                                        </div>
-                                    </Link>
+                            <Link href="/store/capes" legacyBehavior passHref>
+                                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                                    Store
                                 </NavigationMenuLink>
-                                <div className="w-[10rem] h-full flex flex-col gap-4">
-                                    <NavigationMenuLink>
-                                        <Link href={'/capes/community'}>
-                                            <div className="w-full py-4 bg-zinc-900 rounded-sm text-center">
-                                                Community
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink>
-                                        <Link href={'/'}>
-                                            <div className="w-full py-4 bg-zinc-900 rounded-sm text-center">
-                                                Custom
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink asChild>
-                                        <Link href={'/lookup'}>
-                                            <div className="w-full py-4 bg-zinc-900 rounded-sm text-center">
-                                                User Lookup
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                </div>
-                            </NavigationMenuContent>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                            <NavigationMenuTrigger>Cosmetics</NavigationMenuTrigger>
-                            <NavigationMenuContent className="p-4 flex gap-4">
-                                <div className="w-[10rem] h-full flex flex-col gap-4">
-                                    <NavigationMenuLink>
-                                        <Link href={'/capes/community'}>
-                                            <div className="w-full py-4 bg-zinc-900 rounded-sm text-center">
-                                                Community
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink>
-                                        <Link href={'/'}>
-                                            <div className="w-full py-4 bg-zinc-900 rounded-sm text-center">
-                                                Create your Own
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                    <NavigationMenuLink asChild>
-                                        <Link href={'/lookup'}>
-                                            <div className="w-full py-4 bg-zinc-900 rounded-sm text-center">
-                                                User Lookup
-                                            </div>
-                                        </Link>
-                                    </NavigationMenuLink>
-                                </div>
-                                <NavigationMenuLink>
-                                    <Link href={'/capes/catalog'}>
-                                        <div className="w-[10rem] h-full bg-gradient-to-b from-custom-bping-d to-custom-bpink p-6 rounded-sm flex flex-col gap-4 justify-center items-center">
-                                            <Image src={'/assets/characters/cloakicon.png'} width="500" height="500" className="h-[6rem] w-[12rem] object-contain"/>
-                                            <p className="whitespace-nowrap text-lg font-mc text-center">Official</p>
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                            </NavigationMenuContent>
+                            </Link>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
                             <Link href="/compatibility" legacyBehavior passHref>
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                Compatiability
+                                    Compatibility
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
                             <Link href="/faq" legacyBehavior passHref>
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                                FAQ
+                                    FAQ
                                 </NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
                     </NavigationMenuList>
                 </NavigationMenu>
-
             </div>
-            <Image src={'/assets/logo/longnobg.png'} width="1102" height="404" className="h-full w-fit translate-y-[35%] scale-[80%]" />
+            <Image src={'/assets/logo/longnobg.png'} width="1102" height="404" className="h-full w-fit scale-[50%]" />
             <div className="flex gap-4 h-full w-full items-center justify-end">
-                <Button className="px-[5rem] h-3/5 rounded-none text-xl bg-custom-bpink font-mc text-white hover:bg-custom-bpink/90">
+                <Button className="px-[5rem] h-[3.2rem] rounded-none text-xl bg-custom-bpink font-mc text-white hover:bg-custom-bpink/90">
                     DOWNLOAD
                 </Button>
+                <Link href={'/account'} className="border-[3.5px] border-[#41414A]">
+                    {!information?.activeAccountUsername ? <Image src={'/assets/characters/blankFace.png'} width="63" height="63" className="h-[3rem] w-[3rem] aspect-square" />
+                    : <Image src={`https://minotar.net/helm/${information.activeAccountUsername}/63.png`} width="63" height="63" className="h-[2.7rem] w-[2.7rem] aspect-square" />}
+                </Link>
+                <Cart />
             </div>
         </div>
-    )
+    );
 }

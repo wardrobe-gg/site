@@ -7,15 +7,27 @@ import axios from "axios"
 import Pocketbase from "pocketbase";
 import { useEffect, useState } from "react"
 import { Loader2, Loader2Icon } from "lucide-react"
+import { toast } from "sonner"
 
 
 export default function Login() {
     const router = useRouter();
+    const {c} = router.query;
+    const [environment, setEnvironment] = useState('');
     const [isClicked, setIsClicked] = useState(false);
     const [accountCreated, setAccountCreated] = useState(false);
 
     const [accountWaiting, setAccountWaiting] = useState({});
     const [loadingText, setLoadingText] = useState('Logging In...')
+
+    useEffect(() => {
+        const getEnvironment = async () => {
+            const envResponse = await axios.get('/api/getEnvironment');
+            setEnvironment(envResponse.data.environment);
+        }
+
+        getEnvironment();
+    }, []);
 
     const handleLogin = async () => {
         try {
@@ -32,7 +44,8 @@ export default function Login() {
             localStorage.setItem('provider', JSON.stringify(authMethods.authProviders[0]));
     
             let scope = "XboxLive.signin XboxLive.offline_access User.Read";
-            let authURL = (authMethods.authProviders[0].authUrl).replace('&scope=User.Read', `&scope=${encodeURIComponent(scope)}`) + encodeURIComponent('https://wardrobe.gg/oauth2-redirect');
+            let redirect_uri = environment === 'production' ? 'https://wardrobe.gg/oauth2-redirect' : 'http://localhost:3000/oauth2-redirect';
+            let authURL = (authMethods.authProviders[0].authUrl).replace('&scope=User.Read', `&scope=${encodeURIComponent(scope)}`) + encodeURIComponent(redirect_uri);
     
             window.open(authURL, '_blank');
 
@@ -47,6 +60,11 @@ export default function Login() {
 
             await pb.collection('signupWaiting').subscribe(requestSignupWaitState.data.id, function (e) {
                 if (e.action === 'update') {
+                    if (e.record.errored) {
+                        setIsClicked(false);
+                        toast.error(e.record.error);
+                        pb.collection('signupWaiting').unsubscribe(requestSignupWaitState.data.id);
+                    }
                     if (e.record.relatedAccount) {
                         setAccountCreated(true);
                         setAccountWaiting(e.record);
@@ -78,14 +96,21 @@ export default function Login() {
             if (requestSession.status === 200) {
                 localStorage.removeItem('provider');
                 localStorage.removeItem('code_verifier');
+                localStorage.setItem('activeAccount', JSON.stringify(requestSession.data.activeAccount));
                 localStorage.setItem('accountsInfo', JSON.stringify(requestSession.data.accounts))
-                router.push('/')
+
+                if (c === 'true') {
+                    window.close();
+                }
+                else {
+                    router.push('/');
+                }
             }
             else {
                 alert('An error occured.')
             }
         }
-        if (accountCreated === true){
+        if (accountCreated === true && typeof window !== undefined){
             login();
         }
     }, [accountCreated])

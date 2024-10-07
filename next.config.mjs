@@ -7,7 +7,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'minotar.net',
         port: '',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'db.wardrobe.gg',
+        port: '',
+      },
     ]
   }
 };
