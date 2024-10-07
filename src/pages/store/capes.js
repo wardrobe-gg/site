@@ -100,7 +100,7 @@ export default function CapePage() {
                         <Link href={`/store/cape/${cape.id}`}>
                             <div className="flex flex-col gap-2 cursor-pointer">
                                 <div key={index} className="bg-gradient-to-t from-zinc-800 via-zinc-900 to-zinc-950 hover:from-custom-bpink aspect-square border-2 border-[#41414A] hover:border-custom-bpink cursor-pointer shadow-[0_0_100px_5px_rgba(255,255,255,0.1)] transform-all duration-150">
-                                    <img src={cape.url} />
+                                    <img src={cape.url} alt={cape.name} />
                                 </div>
                                 <div className="flex justify-between px-1 font-mc">
                                     <p>{cape.name}</p>
