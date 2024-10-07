@@ -14,9 +14,12 @@ export default async function completeSignup(req, res) {
         return res.status(400).json({ message: 'Missing required fields: code, code_verifier, and state are required.' });
     }
 
+    const pb = new Pocketbase(process.env.PB_URL);
+
     try {
-        const pb = new Pocketbase(process.env.PB_URL);
         await pb.admins.authWithPassword(process.env.PB_ADMIN_EMAIL, process.env.PB_ADMIN_PASS);
+
+        let redirect_uri = process.env.NODE_ENV === 'production' ? 'https://wardrobe.gg/oauth2-redirect' : 'http://localhost:3000/oauth2-redirect';
 
         // Exchange authorization code for access token
         const tokenResponse = await axios.post('https://login.microsoftonline.com/consumers/oauth2/v2.0/token',
@@ -26,7 +29,7 @@ export default async function completeSignup(req, res) {
                 scope: 'XboxLive.signin XboxLive.offline_access openid email profile',
                 code: code,
                 grant_type: 'authorization_code',
-                redirect_uri: 'https://wardrobe.gg/oauth2-redirect',
+                redirect_uri: redirect_uri,
                 code_verifier: code_verifier
             }),
             {
@@ -127,7 +130,7 @@ export default async function completeSignup(req, res) {
 
             // Create a new user in PocketBase
             const accountCreation = await pb.collection('users').create({
-                username: MCUsername, // Fixed to use MCUsername instead of MCUserAccount
+                username: MCUsername,
                 uuid: MCUUID,
                 email: getMe.data.email,
                 msid: getMe.data.id
@@ -144,6 +147,35 @@ export default async function completeSignup(req, res) {
     } catch (e) {
         // Log error for debugging purposes
         console.error('Error in completeSignup:', e.response?.data || e.message);
+
+        let error = '';
+        if (e?.response?.data?.XErr === 2148916233) {
+            error = 'This microsoft account does not own minecraft.'
+        }
+        else {
+            error = 'Unknown error.'
+        }
+
+        if (e?.response?.data?.XErr) {
+            try {
+                const waitingState = await pb.collection('signupWaiting').getFullList({
+                    filter: `state='${state}'`
+                });
+                await pb.collection('signupWaiting').update(waitingState[0].id, {
+                    errored: true,
+                    error: error
+                })
+
+                setTimeout(async () => {
+                    await pb.collection('signupWaiting').delete(waitingState[0].id)
+                }, 250)
+            }
+            catch (e) {
+                console.error(e);
+                console.log('Error with pocketbase ^')
+            }
+        }
+        
 
         // Return appropriate error response
         if (e.response) {

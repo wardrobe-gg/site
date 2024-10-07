@@ -104,18 +104,21 @@ export default async function requestSession(req, res) {
         });
 
         let currentSignedInUsers = sessions.map(tempsession => tempsession.user);
+        let mcAccounts = []
+        for (const id of currentSignedInUsers) {
+            const account = await pb.collection('users').getFullList({
+                filter: `id='${id}'`
+            });
+            mcAccounts.push(account[0]);
+        }
 
-        const mcAccounts = await pb.collection('users').getFullList({
-            filter: `id~'${currentSignedInUsers}'`
-        });
+        console.log(mcAccounts)
 
         let returnedAccounts = mcAccounts.map(account => ({
             user: account.id,
             username: account.username,
             uuid: account.uuid
         }));
-
-        console.log(returnedAccounts);
 
         // Generate a signed JWT with the session ID
         const signedJWT = jwt.sign({
@@ -126,7 +129,11 @@ export default async function requestSession(req, res) {
         res.setHeader('Set-Cookie', `session=${signedJWT}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${30 * 24 * 60 * 60}`);
 
         // Successfully verified SAT and created a session
-        return res.status(200).json({ message: 'Session Created. User logged in.', accounts: returnedAccounts});
+        return res.status(200).json({ message: 'Session Created. User logged in.', accounts: returnedAccounts, activeAccount: {
+            user: satRecord.expand.user.id,
+            username: satRecord.expand.user.username,
+            uuid: satRecord.expand.user.uuid
+        }});
 
     } catch (error) {
         console.error('Error in verifySAT:', error.message);
