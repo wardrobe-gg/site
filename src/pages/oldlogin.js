@@ -8,7 +8,6 @@ import Pocketbase from "pocketbase";
 import { useEffect, useState } from "react"
 import { Loader2, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
-import { NewHeader } from "@/components/main/header"
 
 
 export default function Login() {
@@ -104,7 +103,7 @@ export default function Login() {
                     window.close();
                 }
                 else {
-                    router.push('/account');
+                    router.push('/');
                 }
             }
             else {
@@ -117,19 +116,20 @@ export default function Login() {
     }, [accountCreated])
 
     return (
-        <main className="w-screen h-screen overflow-hidden">
-            <NewHeader />
-            <div className="w-screen h-[80vh] bg-black -mt-[4rem] flex justify-center items-center">
-
-                <div className="bg-[url('/assets/logo/background.png')] opacity-35 fixed h-screen w-screen z-[0]">
+        <main className="grid grid-cols-12">
+            <div className="bg-custom-brass hidden lg:block lg:col-span-2"></div>
+            <div className="col-span-6 lg:col-span-4 h-screen bg-[url('/assets/waves/loginDark.png')] bg-cover"></div>
+            <div className="col-span-6 bg-zinc-100 dark:bg-zinc-950 h-screen flex flex-col gap-8 justify-center items-center">
+                <div className="grid gap-2 text-center">
+                    <h1 className={`text-3xl font-bold text-zinc-950 dark:text-zinc-100`}>
+                        Login
+                    </h1>
+                    <p className="text-zinc-700 dark:text-zinc-400">
+                        Sign in with your microsoft account below to get started.
+                    </p>
                 </div>
-
-                <div className="bg-black relative z-10 w-4/6 h-3/6 border-2 border-[#41414A] flex flex-col justify-evenly items-center p-[1rem]">
-                    <div className="flex flex-col gap-4">
-                        <h1 className="text-4xl font-basically tracking-wide font-medium text-center">Log in</h1>
-                        <span className="text-2xl font-basically text-zinc-400 font-light">Sign in with your microsoft account below</span>
-
-                        <Button type="submit" className="w-full font-basically" onClick={handleLogin} disabled={isClicked}>
+                <div className="grid gap-4 w-1/2">
+                    <Button type="submit" className="w-full" onClick={handleLogin} disabled={isClicked}>
                         {isClicked ? 
                         <>
                             <Loader2 className="mr-2 animate-spin" /> {loadingText}
@@ -138,11 +138,14 @@ export default function Login() {
                             Continue with Microsoft
                         </>}
                     </Button>
-                    </div>
-                    <h1 className="text-2xl">Login</h1>
+                </div>
+                <div className="text-center text-sm dark:text-zinc-300">
+                    Don&apos;t have an account yet?{" "}
+                    <Link href="/signup" className="underline">
+                        Signup
+                    </Link>
                 </div>
             </div>
-
         </main>
     );
 }

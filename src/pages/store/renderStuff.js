@@ -10,7 +10,8 @@ export default function Render() {
             const pb = new Pocketbase('https://db.wardrobe.gg');
 
             // Fetch capes that haven't been rendered yet
-            const capesToRender = await pb.collection('uploaded_capes').getFullList();
+            const capesToRender = await pb.collection('uploaded_capes').getFullList({
+            });
 
             // Create a SkinViewer instance for rendering
             const skinViewer = new SkinViewer({
@@ -19,9 +20,14 @@ export default function Render() {
                 renderPaused: true
             });
 
-            skinViewer.playerObject.rotateY(150 * (Math.PI / 180));
-            skinViewer.zoom = 1.5;
+            skinViewer.playerObject.rotateY(140 * (Math.PI / 180));
+            skinViewer.playerObject.rotateX(3 * (Math.PI / 180));
+            skinViewer.playerObject.rotateZ(7 * (Math.PI / 180));
+            skinViewer.zoom = 1;
+            skinViewer.camera.translateY(15)
+            skinViewer.camera.rotateX(-22.5 * (Math.PI / 180))
             skinViewer.camera.translateX(-1.5)
+
 
             let renderedImages = [];
 
@@ -59,11 +65,8 @@ export default function Render() {
                 // Upload the rendered image back to PocketBase
                 const uploadResponse = await pb.collection('uploaded_capes').update(cape.id, formData);
 
-                // Assuming the PocketBase upload response contains the file URL
-                const imageUrl = `https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${uploadResponse.file}`;
-
                 // Store the image URL
-                renderedImages.push(imageUrl);
+                renderedImages.push(imageDataURL);
             }
 
             // Update state after rendering and uploading all images
@@ -74,10 +77,10 @@ export default function Render() {
     }, []);
 
     return (
-        <>
-            {renderedImages.map((imageUrl, index) => (
-                <img src={imageUrl} key={index} alt={`Rendered cape ${index}`} />
+        <div className='h-screen w-screen justify-center items-center p-[8rem]'>
+            {renderedImages.map((render, index) => (
+                <img src={render} key={index} alt={`Rendered cape ${index}`} />
             ))}
-        </>
+        </div>
     );
 }
