@@ -83,8 +83,8 @@ export default function Logout() {
                     {accountsInfo.length > 0 ?
                         <>
                             <div className="w-[60%] border rounded-lg flex flex-col overflow-hidden">
-                                {accountsInfo.map(account => (
-                                    <div className="border-b w-full flex justify-between items-center pr-[1.5rem]">
+                                {accountsInfo.map((account, index) => (
+                                    <div className="border-b w-full flex justify-between items-center pr-[1.5rem]" key={index}>
                                         <div className="flex gap-4 h-3/4 items-center">
                                             <Image src={`https://minotar.net/helm/${account.username}`} width="100" height="100" className="h-3/4 object-contain rounded-lg"/>
 
