@@ -89,12 +89,17 @@ export default function ComingSOon() {
                         </div>
                 </div>
 
-                <div className="absolute bottom-[2em] left-[2rem]">
+                <div className="hidden lg:block lg:absolute lg:bottom-[2em] lg:left-[2rem]">
                     <span className="text-white font-basically">NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT</span>
                 </div>
 
                 <div className="absolute bottom-0 right-0 z-0 lg:hidden overflow-hidden">
                     <Image src={'/assets/logo/lcut-btm-side.png'} width="866" height="619" className="translate-x-[20%] translate-y-[20%]" loading="eager" alt={''} />
+                </div>
+
+
+                <div className="flex justify-center lg:hidden">
+                    <span className="text-white text-center font-basically">NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT</span>
                 </div>
             </div>
         </>

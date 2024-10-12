@@ -2,7 +2,7 @@ import Pocketbase from "pocketbase";
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import cookie from 'cookie';
+import Cookies from 'cookies';
 
 export default async function requestSession(req, res) {
     if (req.method !== 'POST') {
@@ -34,7 +34,7 @@ export default async function requestSession(req, res) {
         const pb = new Pocketbase(process.env.PB_URL);
         await pb.admins.authWithPassword(process.env.PB_ADMIN_EMAIL, process.env.PB_ADMIN_PASS);
 
-        const satRecord = await pb.collection('SATs').getFirstListItem(`SAT="${decryptedSAT}"`, {expand: 'user'});
+        const satRecord = await pb.collection('SATs').getFirstListItem(`SAT="${decryptedSAT}"`, { expand: 'user' });
 
         if (!satRecord) {
             return res.status(404).json({ message: 'SAT not found in the database.' });
@@ -58,8 +58,9 @@ export default async function requestSession(req, res) {
         let encryptedSessionData = sessionCipher.update(sessionData, 'utf8', 'hex');
         encryptedSessionData += sessionCipher.final('hex');
 
-        const cookies = cookie.parse(req.headers.cookie || '');
-        const currentSession = cookies.session;
+        // Get current session token using cookies package
+        const cookies = new Cookies(req, res);
+        const currentSession = cookies.get('session');
 
         // Verify and decode the current session token (if it exists)
         let unsignedSession = null;
@@ -82,11 +83,6 @@ export default async function requestSession(req, res) {
             filter: `user='${satRecord.user}'`
         });
 
-        // Delete current sessions from the database
-        for (const tempsession of getCurrentSessions) {
-            await pb.collection('sessions').delete(tempsession.id);
-        }
-
         // Store the encrypted session and IV in the database
         const sessionRecord = await pb.collection('sessions').create({
             session: `${sessionIV.toString('hex')}:${encryptedSessionData}`, // Combine IV and encrypted session for later decryption
@@ -94,17 +90,18 @@ export default async function requestSession(req, res) {
         });
 
         if (!satRecord.user) {
-            return res.status(403).json({message: 'SAT INVALID'});
+            return res.status(403).json({ message: 'SAT INVALID' });
         }
+
         // Push the new session into the sessions array
         sessions.push({
             sessionID: sessionRecord.id, // Store the session ID
-            hashedSession: await bcrypt.hash(encryptedSessionData, 12), // Hash the encrypted session
+            hashedSession: await bcrypt.hash(sessionData, 12), // Hash the encrypted session
             user: satRecord.user
         });
 
         let currentSignedInUsers = sessions.map(tempsession => tempsession.user);
-        let mcAccounts = []
+        let mcAccounts = [];
         for (const id of currentSignedInUsers) {
             const account = await pb.collection('users').getFullList({
                 filter: `id='${id}'`
@@ -112,7 +109,7 @@ export default async function requestSession(req, res) {
             mcAccounts.push(account[0]);
         }
 
-        console.log(mcAccounts)
+        console.log(mcAccounts);
 
         let returnedAccounts = mcAccounts.map(account => ({
             user: account.id,
@@ -125,15 +122,24 @@ export default async function requestSession(req, res) {
             sessions, // Include the updated sessions array in the JWT payload
         }, process.env.MASTER_ENCRYPTION_KEY); // Use the same key for signing
 
-        // Set HTTP-only cookie for the session
-        res.setHeader('Set-Cookie', `session=${signedJWT}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${30 * 24 * 60 * 60}`);
+        // Set HTTP-only cookie for the session using cookies package
+        cookies.set('session', signedJWT, {
+            httpOnly: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+            sameSite: 'strict',
+            path: '/'
+        });
 
         // Successfully verified SAT and created a session
-        return res.status(200).json({ message: 'Session Created. User logged in.', accounts: returnedAccounts, activeAccount: {
-            user: satRecord.expand.user.id,
-            username: satRecord.expand.user.username,
-            uuid: satRecord.expand.user.uuid
-        }});
+        return res.status(200).json({
+            message: 'Session Created. User logged in.',
+            accounts: returnedAccounts,
+            activeAccount: {
+                user: satRecord.expand.user.id,
+                username: satRecord.expand.user.username,
+                uuid: satRecord.expand.user.uuid
+            }
+        });
 
     } catch (error) {
         console.error('Error in verifySAT:', error.message);

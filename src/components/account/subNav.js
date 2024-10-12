@@ -1,4 +1,4 @@
-import { ChevronDown, PlusIcon } from "lucide-react";
+import { ChevronDown, LogOutIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router"
 import {
@@ -12,7 +12,8 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 
-export default function StoreNavigation() {
+export default function AccountNavigation() {
+    const router = useRouter();
     const [signedIn, setSignedIn] = useState(false);
     const [accountInfo, setAccountInfo] = useState([]);
     const [activeAccount, setActiveAccount] = useState({});
@@ -55,13 +56,13 @@ export default function StoreNavigation() {
     return (
         <div className="flex justify-between px-[4rem] py-[0rem] -mt-[1rem]">
             <div className="flex gap-8 w-full">
-                <h2 className="font-mc text-4xl">Store</h2>
+                <h2 className="font-mc text-4xl">Account</h2>
 
                 <div className="flex font-basically">
-                    <SubNavItem requiredLink={'/store/capes'} name={'Capes'} />
-                    <SubNavItem requiredLink={'/store/cosmetics'} name={'Cosmetics'} />
-                    <SubNavItem requiredLink={'/store/community'} name={'User Creations'} />
-                    <SubNavItem requiredLink={'/store/upload'} name={'Upload'} />
+                    <SubNavItem requiredLink={'/account'} name={'Home'} />
+                    <SubNavItem requiredLink={'/account/cape'} name={'Your Cape'} />
+                    <SubNavItem requiredLink={'/account/cosmetics'} name={'Your Cosmetics'} />
+                    <SubNavItem requiredLink={`/logout?rName=Account&r=${encodeURIComponent(router.pathname)}`} name={'Logout'} />
                 </div>
             </div>
             <div className="w-full flex items-center justify-end font-basically text-zinc-500 font-medium whitespace-nowrap">
@@ -79,6 +80,8 @@ export default function StoreNavigation() {
                                 </DropdownMenuItem>
                             ))}
                             <Link href={'/login?c=true'} target="_blank"><DropdownMenuItem><PlusIcon className="size-4 mr-2"/> Add account</DropdownMenuItem></Link>
+                            <DropdownMenuSeparator />
+                            <Link href={'/logout'} target="_blank"><DropdownMenuItem><LogOutIcon className="size-4 mr-2"/> Logout</DropdownMenuItem></Link>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </p>

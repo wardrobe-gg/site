@@ -99,7 +99,7 @@ export function NewHeader() {
                 <Button className="px-[5rem] h-[3.2rem] rounded-none text-xl bg-custom-bpink font-mc text-white hover:bg-custom-bpink/90">
                     DOWNLOAD
                 </Button>
-                <Link href={'/account'} className="border-[3.5px] border-[#41414A]">
+                <Link href={information?.activeAccountUsername ? '/account' : '/login'} className="border-[3.5px] border-[#41414A]">
                     {!information?.activeAccountUsername ? <Image src={'/assets/characters/blankFace.png'} width="63" height="63" className="h-[3rem] w-[3rem] aspect-square" />
                     : <Image src={`https://minotar.net/helm/${information.activeAccountUsername}/63.png`} width="63" height="63" className="h-[2.7rem] w-[2.7rem] aspect-square" />}
                 </Link>
