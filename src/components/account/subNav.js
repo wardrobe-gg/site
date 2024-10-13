@@ -61,7 +61,6 @@ export default function AccountNavigation() {
                 <div className="flex font-basically">
                     <SubNavItem requiredLink={'/account'} name={'Home'} />
                     <SubNavItem requiredLink={'/account/cape'} name={'Your Cape'} />
-                    <SubNavItem requiredLink={'/account/cosmetics'} name={'Your Cosmetics'} />
                     <SubNavItem requiredLink={`/logout?rName=Account&r=${encodeURIComponent(router.pathname)}`} name={'Logout'} />
                 </div>
             </div>

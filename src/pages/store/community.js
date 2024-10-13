@@ -16,7 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
-import { CheckIcon, Loader2 } from "lucide-react";
+import { CheckIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { SkinViewer, WalkingAnimation, FlyingAnimation, IdleAnimation } from "skinview3d";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -132,7 +133,7 @@ export default function CapePage() {
                     dataLength={capes.length} // This is important field to render the next data
                     next={fetchMoreData}
                     hasMore={hasMore}
-                    loader={<h4 className="flex justify-center col-span-5 text-center font-mc text-lg py-[3rem]"><Loader2 className="animate-spin mr-2" />Loading...</h4>}
+                    loader={<h4 className="w-full flex justify-center col-span-5 text-center font-mc text-lg py-[3rem]"><Loader2 className="animate-spin mr-2" />Loading...</h4>}
                     endMessage={<p className="col-span-5 text-center font-mc text-lg py-[3rem]">You&apos;ve reached the end</p>}
                     className="p-8 w-full grid grid-cols-5 gap-8 h-full overflow-y-scroll"
                 >
@@ -173,7 +174,7 @@ function CapeItem({ cape, information }) {
                     setIsEquipping(2);
                     setTimeout(() => {
                         setIsOpen(false)
-                        setTimeout(() => {setIsEquipping(0)}, 150);
+                        setTimeout(() => {setIsEquipping(4)}, 150);
                     }, 1750);
                     
                 }
@@ -245,7 +246,7 @@ function CapeItem({ cape, information }) {
                             :( isEquipping === 1
                                 ? <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc">Equipping...</Button>
                             : isEquipping === 2
-                                ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={() => setIsOpen(false)}><CheckIcon className="size-4 mr-2" />Equipped!</Button>
+                                ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={() => setIsOpen(false)}>Equipped</Button>
                             : isEquipping === 3 
                                 ? <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc" onClick={() => setIsOpen(false)}>An error occured.</Button>
                                 : <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc" onClick={() => setIsOpen(false)}>Equipped</Button>

@@ -14,6 +14,8 @@ import { Button } from "../ui/button";
 
 export default function StoreNavigation() {
     const [signedIn, setSignedIn] = useState(false);
+    const router = useRouter();
+    const pathname = router.pathname;
     const [accountInfo, setAccountInfo] = useState([]);
     const [activeAccount, setActiveAccount] = useState({});
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -68,12 +70,11 @@ export default function StoreNavigation() {
 
     return (
         <div className="flex justify-between px-[4rem] py-[0rem] -mt-[1rem]">
-            <div className={`flex gap-8 w-full pl-[3rem]`}>
-                <h2 className={`font-mc text-4xl fixed left-[4rem] transition-all duration-200 ${scrollPosition >= 100 ? 'translate-x-[6rem] translate-y-[.5rem]' : ''}`}>Store</h2>
-                <h2 className="select-none text-transparent text-4xl" aria-hidden="true">Store</h2>
-                <div className={`flex font-basically transition-all duration-200 ${scrollPosition >= 100 ? 'translate-x-[4rem]' : ''}`}>
+            <div className={`flex w-full ${pathname !== '/store/community' ? 'pl-[3rem] gap-8':'gap-[5rem]'}`}>
+                <h2 className={`font-mc text-4xl fixed left-[4rem] transition-all duration-200 ${pathname === '/store/community' ? 'hidden' : ''} ${scrollPosition >= 100 ? 'translate-x-[6rem] translate-y-[.5rem]' : ''}`}>Store</h2>
+                <h2 className={`select-none font-mc ${pathname !== '/store/community' ? 'text-transparent' : ''} text-4xl`} aria-hidden="true">Store</h2>
+                <div className={`flex font-basically transition-all duration-200 ${pathname !== '/store/community' && scrollPosition >= 100 ? 'translate-x-[4rem]' : ''}`}>
                     <SubNavItem requiredLink={'/store/capes'} name={'Capes'} />
-                    <SubNavItem requiredLink={'/store/cosmetics'} name={'Cosmetics'} />
                     <SubNavItem requiredLink={'/store/community'} name={'User Creations'} />
                     <SubNavItem requiredLink={'/store/upload'} name={'Upload'} />
                 </div>

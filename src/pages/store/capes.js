@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckIcon } from "lucide-react";
 
 export default function CapePage() {
     const pb = new Pocketbase('https://db.wardrobe.gg');
