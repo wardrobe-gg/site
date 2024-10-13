@@ -16,6 +16,7 @@ export default function StoreNavigation() {
     const [signedIn, setSignedIn] = useState(false);
     const [accountInfo, setAccountInfo] = useState([]);
     const [activeAccount, setActiveAccount] = useState({});
+    const [scrollPosition, setScrollPosition] = useState(0);
 
     useEffect(() => {
 
@@ -46,6 +47,19 @@ export default function StoreNavigation() {
         return () => clearInterval(interval);
     }, []);
 
+    const handleScroll = () => {
+        const position = window.scrollY;
+        setScrollPosition(position);
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
     const makeActiveAccount = (accountId) => {
         // Find the new active account based on the accountId
         const newActiveAccount = accountInfo.find(account => account.id === accountId);
@@ -54,10 +68,10 @@ export default function StoreNavigation() {
 
     return (
         <div className="flex justify-between px-[4rem] py-[0rem] -mt-[1rem]">
-            <div className="flex gap-8 w-full">
-                <h2 className="font-mc text-4xl">Store</h2>
-
-                <div className="flex font-basically">
+            <div className={`flex gap-8 w-full pl-[3rem]`}>
+                <h2 className={`font-mc text-4xl fixed left-[4rem] transition-all duration-200 ${scrollPosition >= 100 ? 'translate-x-[6rem] translate-y-[.5rem]' : ''}`}>Store</h2>
+                <h2 className="select-none text-transparent text-4xl" aria-hidden="true">Store</h2>
+                <div className={`flex font-basically transition-all duration-200 ${scrollPosition >= 100 ? 'translate-x-[4rem]' : ''}`}>
                     <SubNavItem requiredLink={'/store/capes'} name={'Capes'} />
                     <SubNavItem requiredLink={'/store/cosmetics'} name={'Cosmetics'} />
                     <SubNavItem requiredLink={'/store/community'} name={'User Creations'} />

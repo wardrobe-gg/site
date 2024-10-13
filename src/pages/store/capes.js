@@ -12,14 +12,11 @@ import {
     DialogContent,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { twMerge } from "tailwind-merge";
-import axios from "axios";
-import { CheckIcon, LibraryIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-
+import InfiniteScroll from 'react-infinite-scroll-component';
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 export default function CapePage() {
     const pb = new Pocketbase('https://db.wardrobe.gg');
@@ -28,6 +25,8 @@ export default function CapePage() {
     const [potentialFilters, setPotentialFilters] = useState([]);
     const [information, setInformation] = useState({});
     const [search, setSearch] = useState('');
+    const [hasMore, setHasMore] = useState(true); // Track if more items are available
+    const [currentPage, setCurrentPage] = useState(1); // Track the current page
     const searchTimeout = useRef(null); // For debounce
 
     // Debounced search function
@@ -36,6 +35,8 @@ export default function CapePage() {
         clearTimeout(searchTimeout.current);
         searchTimeout.current = setTimeout(() => {
             setSearch(value);
+            setCurrentPage(0); // Reset page when searching
+            setCapes([]); // Reset capes
         }, 500); // 500ms delay for debounce
     };
 
@@ -46,66 +47,81 @@ export default function CapePage() {
                 sort: 'weight'
             }, { requestKey: randomBytes(4).toString('hex') });
 
-            let i = 0;
-            for (let filter of potentialFilters) {
-                potentialFilters[i].url = `https://db.wardrobe.gg/api/files/tags/${filter.id}/${filter.icon}`;
-                i++;
-            }
+            potentialFilters.forEach((filter) => {
+                filter.url = `https://db.wardrobe.gg/api/files/tags/${filter.id}/${filter.icon}`;
+            });
 
             console.log(potentialFilters);
             setPotentialFilters(potentialFilters);
         };
 
-        if (typeof window !== undefined) {
+        if (typeof window !== 'undefined') {
             getStuff();
         }
-    }, []);
+    }, []); // Empty dependency array
+
+    const getCapes = async (page) => {
+        const limit = 12;
+        console.log(page)
+        let getTheDarnCapes = await pb.collection('uploaded_capes').getList(page, limit, {
+            filter: `tags~'${filters[0]}'${filters[1] ? ` && tags~'${filters[1]}'` : ''}${search ? ` && name~'${search}'` : ''}`,
+            requestKey: randomBytes(4).toString('hex'),
+            expand: 'author'
+        });
+    
+        // Map through the fetched capes and format them
+        let items = getTheDarnCapes.items.map(cape => ({
+            ...cape,
+            url: `https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.render}`,
+            inLibrary: false, // Initially mark as not in library
+            active: false // Set initial active status to false
+        }));
+    
+        // Check if the user is logged in and get their library of cloaks
+        const activeAccount = JSON.parse(localStorage.getItem('activeAccount'))?.user;
+        if (activeAccount) {
+            const userCapeLibrary = await axios.get('/api/cloak/getAllCloaks', {
+                params: {
+                    userID: activeAccount
+                }
+            });
+    
+            const libraryCapes = userCapeLibrary.data.capes;
+    
+            const updatedItems = items.map(item => {
+                // Find the cape in the user's library
+                const libraryCape = libraryCapes.find(libraryCape => libraryCape.id === item.id);
+                const inLibrary = !!libraryCape; // Check if cape is in library
+                const active = libraryCape ? libraryCape.active : false; // Get active status if it exists
+    
+                return { ...item, inLibrary, active };
+            });
+    
+            if (page === 1 || page === 0) {
+                setCapes([...updatedItems]);
+            }
+            else {
+                const existingCapes = new Set(capes.map(cape => cape.id));
+                const newCapes = updatedItems.filter(item => !existingCapes.has(item.id));
+                if (newCapes.length === 0) {
+                    setHasMore(false);
+                }
+                console.log([...newCapes]);
+                setCapes(prevCapes => [...prevCapes, ...newCapes]); // Append new capes
+            }
+
+        }
+
+        setHasMore(getTheDarnCapes.items.length === limit);
+    };
 
     useEffect(() => {
-        const getCapes = async () => {
-            // Fetch the list of capes
-            let getTheDarnCapes = await pb.collection('uploaded_capes').getList(0, 25, {
-                filter: `tags~'${filters[0]}'${filters[1] ? ` && tags~'${filters[1]}'` : ''}${search ? ` && name~'${search}'` : ''}`,
-                requestKey: randomBytes(4).toString('hex'),
-                expand: 'author'
-            });
-
-            let items = getTheDarnCapes.items.map(cape => ({
-                ...cape,
-                url: `https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.render}`,
-                inLibrary: false, // Initially mark as not in library
-                active: false // Set initial active status to false
-            }));
-
-            setCapes(items); // Set capes first
-
-            // Check if the user is logged in and get their library of cloaks
-            const activeAccount = JSON.parse(localStorage.getItem('activeAccount'))?.user;
-            if (activeAccount) {
-                const userCapeLibrary = await axios.get('/api/cloak/getAllCloaks', {
-                    params: {
-                        userID: activeAccount
-                    }
-                });
-
-                const libraryCapes = userCapeLibrary.data.capes;
-                console.log(libraryCapes);
-
-                const updatedItems = items.map(item => {
-                    // Find the cape in the user's library
-                    const libraryCape = libraryCapes.find(libraryCape => libraryCape.id === item.id);
-                    const inLibrary = !!libraryCape; // Check if cape is in library
-                    const active = libraryCape ? libraryCape.active : false; // Get active status if it exists
-
-                    return { ...item, inLibrary, active };
-                });
-
-                setCapes(updatedItems); // Update capes again after checking the library
-            }
-        };
-
-        getCapes();
+        getCapes(1)
     }, [filters, search]);
+
+    useEffect(() => {
+        getCapes(currentPage);
+    }, [currentPage]);
 
     const switchFilter = (filterId) => {
         if (!filters.includes(filterId)) {
@@ -116,12 +132,13 @@ export default function CapePage() {
     };
 
     useEffect(() => {
+        getCapes(1);
         const updateInformation = () => {
             let information = {
                 isLoggedIn: (localStorage.getItem('activeAccount')) ? true : false,
                 activeAccountUsername: JSON.parse(localStorage.getItem('activeAccount'))?.username
-            }
-            setInformation(information)
+            };
+            setInformation(information);
         };
 
         // Update information initially
@@ -135,12 +152,17 @@ export default function CapePage() {
         return () => clearInterval(interval);
     }, []);
 
+    const fetchMoreData = () => {
+        console.log('next page set.')
+        setCurrentPage(prevPage => prevPage + 1); // Increment page number to fetch more data
+    };
+
     return (
-        <div className="w-screen h-screen m-auto overflow-hidden">
+        <div className="w-screen h-screen m-auto">
             <NewHeader />
             <StoreNavigation />
-            <div className="w-full h-[81.8vh] flex gap-12 pt-[3rem]">
-                <div className="w-[453px] h-full border-r-2 border-t-2 flex flex-col items-center p-12">
+            <div className="w-full h-[81.8vh] flex gap-12 pt-[3rem] pl-[453px]">
+                <div className="w-[453px] h-full border-r-2 border-t-2 flex flex-col items-center p-12 fixed left-0">
                     <div className="flex flex-col gap-8">
                         <Input className="rounded-none font-basically text-lg py-6 px-4 border-[#41414A]" placeholder="Search" onChange={handleSearch} />
                         <div className="flex flex-col gap-4 pl-[8px]">
@@ -171,11 +193,18 @@ export default function CapePage() {
                     </div>
                 </div>
 
-                <div className="p-8 w-full grid grid-cols-4 gap-8 h-full overflow-y-scroll">
+                <InfiniteScroll
+                    dataLength={capes.length} // This is important field to render the next data
+                    next={fetchMoreData}
+                    hasMore={hasMore}
+                    loader={<h4 className="flex justify-center col-span-4 text-center font-mc text-lg py-[3rem]"><Loader2 className="animate-spin mr-2" />Loading...</h4>}
+                    endMessage={<p className="col-span-4 text-center font-mc text-lg py-[3rem]">You&apos;ve reached the end</p>}
+                    className="p-8 w-[70vw] grid grid-cols-4 gap-8 h-full overflow-y-scroll"
+                >
                     {capes.map((cape, index) => (
                         <CapeItem cape={cape} key={index} information={information} />
                     ))}
-                </div>
+                </InfiniteScroll>
             </div>
         </div>
     );
@@ -266,7 +295,7 @@ function CapeItem({ cape, information }) {
                     </div>
                 </div>
             </DialogTrigger>
-            <DialogContent className="flex justify-center items-center w-1/2 h-1/2 pr-[4rem] gap-[4rem] bg-zinc-950">
+            <DialogContent className="flex justify-center items-center w-1/2 h-1/2 pr-[4rem] gap-[4rem] bg-oblack">
                 <div className="w-1/3 flex flex-col items-center h-full">
                     <SkinContainer name={information.activeAccountUsername} cape={`https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.cape_file}`} />
                 </div>
@@ -275,7 +304,7 @@ function CapeItem({ cape, information }) {
                         <div className="flex flex-col gap-4">
                             <div className="gap-2">
                                 <p className="text-3xl font-mc font-semibold">{cape.name}</p>
-                                <p className="text-lg font-basically text-zinc-400">by {cape.expand.author.name}</p>
+                                <p className="text-lg font-basically text-zinc-400">by {cape?.expand?.author?.name}</p>
                             </div>
                             <p>This item adds a custom cape and elytra to the back of your Minecraft character, visible to all other players using wardrobe.gg with Optifine.</p>
                         </div>
