@@ -71,12 +71,12 @@ export default function Logout() {
             <NewHeader />
 
 
-            <div className="w-screen h-[80vh] bg-black -mt-[4rem] flex justify-center items-center">
+            <div className="w-screen h-[80vh] bg-oblack -mt-[4rem] flex justify-center items-center">
 
                 <div className="bg-[url('/assets/logo/background.png')] opacity-35 fixed h-screen w-screen z-[0]">
                 </div>
 
-                <div className="bg-black relative z-10 w-4/6 h-3/6 border-2 border-[#41414A] flex flex-col justify-evenly items-center p-[1rem]">
+                <div className="bg-oblack relative z-10 w-4/6 h-3/6 border-2 border-[#41414A] flex flex-col justify-evenly items-center p-[1rem]">
                     <div className="flex flex-col gap-4">
                         <h1 className="text-4xl font-basically tracking-wide font-medium text-center">Logout</h1>
                     </div>

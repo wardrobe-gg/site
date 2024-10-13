@@ -143,7 +143,7 @@ export default function CapePage() {
                 <div className="w-[453px] h-full border-r-2 border-t-2 flex flex-col items-center p-12">
                     <div className="flex flex-col gap-8">
                         <Input className="rounded-none font-basically text-xl" placeholder="Search" onChange={handleSearch} />
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 pl-[8px]">
                             {potentialFilters.map((filter, index) => (
                                 <div
                                     key={index}
@@ -278,7 +278,7 @@ function CapeItem({ cape, information }) {
                             <p>This item adds a custom cape and elytra to the back of your Minecraft character, visible to all other players using wardrobe.gg with Optifine.</p>
                         </div>
                         <div className="w-full flex gap-4">
-                            <button className={`aspect-square h-full border-2 border-[#8D9096] flex justify-center items-center ${isAddedToLibrary === true && 'bg-white border-white'}`} onClick={addToLibrary}>
+                            <button className={`aspect-square h-full border-2 border-[#41414A] flex justify-center items-center ${isAddedToLibrary === true && 'bg-white border-white'}`} onClick={addToLibrary}>
                                 <Image src={isAddedToLibrary === true ? '/assets/icons/library-selected.png' : '/assets/icons/library-unselected.png'} height={34} width={34} className={`h-1/2 w-1/3 ${isAddedToLibrary === true && 'brightness-0'}`}/>
                             </button>
                             {!information?.activeAccountUsername && cape.active === false ?
