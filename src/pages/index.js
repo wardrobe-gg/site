@@ -44,7 +44,7 @@ export default function ComingSOon() {
                     <div className="w-full relative flex flex-col justify-center overflow-x-visible overflow-y-hidden"> {/* Set relative position to contain absolutely positioned child */}
                         <div className="mt-auto h-[30%] w-full">
                         </div>
-                        <div className="mt-auto bg-gradient-to-t from-custom-bpink to-black h-[70%] w-full lg:w-[68%] z-0">
+                        <div className="mt-auto bg-gradient-to-t from-custom-bpink to-oblack h-[70%] w-full lg:w-[68%] z-0">
                         </div>
                         <div className="absolute top-0 left-0 z-10 w-full lg:w-[69%] h-full flex justify-end items-end gap-[4rem]">
                             <Image src={'/assets/logo/butchered-di-logo.png'} width="589" height="589" className="hidden xl:block translate-x-[49.75%] h-[55vh] w-[55vh] select-none" alt={''} draggable="false" loading="eager"  />
@@ -59,7 +59,7 @@ export default function ComingSOon() {
 
                         </div>
                     </div>
-                    <div className="w-[55%] bg-black hidden lg:block">
+                    <div className="w-[55%] hidden lg:block">
 
                         <div className="hidden md:hidden xl:flex absolute top-[30vh] pr-[5rem] right-0 z-0 h-[60vh] justify-end items-center">
                             <p className="font-basically lg:text-3xl transform rotate-90 w-fit origin-bottom-right text-zinc-400">
