@@ -17,7 +17,7 @@ import Cart from "./Cart";
 
 export default function MainHeader() {
     return (
-        <div className="h-[10vh] w-full bg-black flex justify-between items-end border-b sticky top-0 lg:mb-[4rem] px-4 lg:px-[8rem]">
+        <div className="h-[10vh] w-full bg-oblack flex justify-between items-end border-b sticky top-0 lg:mb-[4rem] px-4 lg:px-[8rem]">
             <div className="flex gap-8 h-full w-full items-center">
                 <Link href={'/'}>Home</Link>
                 <Link href={'/'}>Store</Link>
@@ -59,7 +59,7 @@ export function NewHeader() {
 
 
     return (
-        <div className="h-[10vh] w-full bg-black flex justify-between items-end border-b sticky top-0 lg:mb-[4rem] px-4 lg:px-[8rem] z-[100]">
+        <div className="h-[10vh] w-full bg-oblack flex justify-between items-end border-b sticky top-0 lg:mb-[4rem] px-4 lg:px-[8rem] z-[100]">
             <div className="flex gap-8 h-full w-full items-center">
                 <NavigationMenu>
                     <NavigationMenuList>

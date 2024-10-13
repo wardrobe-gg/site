@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
+    --background: 240 6 7;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -32,7 +32,7 @@
   }
 
   .dark {
-    --background: 0 0% 0%;
+    --background: 240 6 7;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -71,7 +71,7 @@
 @font-face {
   font-family: 'Minecraft';
   src: url('/fonts/Ranyth5x_BIG.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 400; /* This font only has normal weight */
   font-style: normal;
   font-display: swap;
 }
@@ -79,7 +79,23 @@
 @font-face {
   font-family: 'Blackentina';
   src: url('/fonts/Blackentina 4F-Italic.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 400; /* Assuming it only has normal weight */
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Basically';
+  src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Basically';
+  src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Light.ttf') format('truetype');
+  font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
@@ -87,25 +103,23 @@
 @font-face {
   font-family: 'Basically';
   src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Regular.ttf') format('truetype');
-  font-weight: normal;
+  font-weight: 400; /* Normal weight */
   font-style: normal;
   font-display: swap;
 }
-
 
 @font-face {
   font-family: 'Basically';
   src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Medium.ttf') format('truetype');
-  font-weight: medium;
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
-
 @font-face {
   font-family: 'Basically';
   src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-SemiBold.ttf') format('truetype');
-  font-weight: semibold;
+  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
@@ -113,7 +127,23 @@
 @font-face {
   font-family: 'Basically';
   src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Bold.ttf') format('truetype');
-  font-weight: bold;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Basically';
+  src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Basically';
+  src: url('/fonts/basically_a_sans_serif/fonts/ttf/BasicallyASansSerif-Black.ttf') format('truetype');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }

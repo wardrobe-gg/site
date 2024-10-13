@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import Pocketbase from 'pocketbase';
 import Image from "next/image";
 import { randomBytes } from 'crypto';
-import { SkinViewer, WalkingAnimation, FlyingAnimation } from "skinview3d";
+import { SkinViewer, WalkingAnimation, FlyingAnimation, IdleAnimation } from "skinview3d";
 import Link from "next/link";
 import {
     Dialog,
@@ -17,7 +17,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
-import { CheckIcon, Loader2 } from "lucide-react";
+import { CheckIcon, LibraryIcon, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function CapePage() {
     const pb = new Pocketbase('https://db.wardrobe.gg');
@@ -32,6 +33,7 @@ export default function CapePage() {
         const getStuff = async () => {
             let potentialFilters = await pb.collection('tags').getFullList({
                 filter: "appliesToCollection='uploaded_capes'",
+                sort: 'weight'
             }, { requestKey: randomBytes(4).toString('hex') });
 
             let i = 0;
@@ -51,24 +53,47 @@ export default function CapePage() {
 
     useEffect(() => {
         const getCapes = async () => {
+            // Fetch the list of capes
             let getTheDarnCapes = await pb.collection('uploaded_capes').getList(0, 25, {
-                filter: `tags~'${filters[0]}'${filters[1] !== undefined ? ` && tags~'${filters[1]}'` : ''}${search !== '' ? `&& name~'${search}'` : ''}`,
+                filter: `tags~'${filters[0]}'${filters[1] ? ` && tags~'${filters[1]}'` : ''}${search ? ` && name~'${search}'` : ''}`,
                 requestKey: randomBytes(4).toString('hex'),
                 expand: 'author'
             });
-
-            let items = getTheDarnCapes.items;
-
-            let i = 0;
-            for (let cape of items) {
-                let url = `https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.render}`;
-                items[i].url = url;
-                i++;
+    
+            let items = getTheDarnCapes.items.map(cape => ({
+                ...cape,
+                url: `https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.render}`,
+                inLibrary: false, // Initially mark as not in library
+                active: false // Set initial active status to false
+            }));
+    
+            setCapes(items); // Set capes first
+    
+            // Check if the user is logged in and get their library of cloaks
+            const activeAccount = JSON.parse(localStorage.getItem('activeAccount'))?.user;
+            if (activeAccount) {
+                const userCapeLibrary = await axios.get('/api/cloak/getAllCloaks', {
+                    params: {
+                        userID: activeAccount
+                    }
+                });
+    
+                const libraryCapes = userCapeLibrary.data.capes;
+                console.log(libraryCapes);
+    
+                const updatedItems = items.map(item => {
+                    // Find the cape in the user's library
+                    const libraryCape = libraryCapes.find(libraryCape => libraryCape.id === item.id);
+                    const inLibrary = !!libraryCape; // Check if cape is in library
+                    const active = libraryCape ? libraryCape.active : false; // Get active status if it exists
+    
+                    return { ...item, inLibrary, active };
+                });
+    
+                setCapes(updatedItems); // Update capes again after checking the library
             }
-
-            setCapes(items);
         };
-
+    
         getCapes();
     }, [filters, search]);
 
@@ -120,7 +145,7 @@ export default function CapePage() {
                                         src={filter.url}
                                         width="33"
                                         height="33"
-                                        className={`h-[33px] w-[33px] object-contain ${filters.includes(filter.id) && 'brightness-200'}`}
+                                        className={`h-[25px] w-[25px] object-contain ${filters.includes(filter.id) && 'brightness-200'}`}
                                     />
                                     <p
                                         className={
@@ -150,9 +175,20 @@ export default function CapePage() {
 function CapeItem({ cape, information }) {
     const [isEquipping, setIsEquipping] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
-    const [fauxApplications, setFauxApplications] = useState(-1);
+    const [isAddedToLibrary, setIsAddedToLibrary] = useState(cape?.inLibrary === true ? true : false);
+
+    useEffect(() => {
+        setIsAddedToLibrary(cape.inLibrary); // Ensure local state reflects prop changes
+    }, [cape.inLibrary]);
+
+    useEffect(() => {
+        if (cape.active === true) {
+            setIsEquipping(4);
+        }
+    }, [cape.active])
 
     const equipCloak = async () => {
+
         if (information.activeAccountUsername) {
             setIsEquipping(1);
             try {
@@ -162,16 +198,6 @@ function CapeItem({ cape, information }) {
                 });
     
                 if (updateCloak.status === 200) {
-                    setFauxApplications(cape.applications + 1);
-                    setIsEquipping(2);
-                    setTimeout(() => {
-                        setIsOpen(false)
-                        setTimeout(() => {setIsEquipping(0)}, 150);
-                    }, 1750);
-                    
-                }
-                if (updateCloak.status === 200) {
-                    setFauxApplications(cape.applications + 1);
                     setIsEquipping(2);
                     setTimeout(() => {
                         setIsOpen(false)
@@ -196,13 +222,27 @@ function CapeItem({ cape, information }) {
         }
     }
 
+    const addToLibrary = async () => {
+        try {
+            setIsAddedToLibrary(!isAddedToLibrary);
+            await axios.post('/api/cloak/addToLibrary', {
+                cloakId: cape.id,
+                activeAccount: JSON.parse(localStorage.getItem('activeAccount'))?.user
+            })
+        }
+        catch (e) {
+            console.error(e);
+            setIsAddedToLibrary(false);
+            toast.error('An error occured.')
+        }
+    }
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <div>
                     <div className="flex flex-col gap-2 cursor-pointer">
-                        <div className="bg-gradient-to-t from-zinc-800 via-zinc-900 to-zinc-950 hover:from-custom-bpink aspect-square border-2 border-[#41414A] hover:border-custom-bpink cursor-pointer shadow-[0_0_100px_5px_rgba(255,255,255,0.1)] transform-all duration-150">
+                        <div className="bg-gradient-to-t from-zinc-800 via-zinc-900 to-zinc-950 hover:from-custom-bpink aspect-square border-2 border-[#41414A] hover:border-custom-bpink cursor-pointer shadow-ciwhite hover:shadow-cipink transform-all duration-150 overflow-hidden">
                             <img
                                 src={cape.url}
                                 alt={cape.name}
@@ -215,21 +255,24 @@ function CapeItem({ cape, information }) {
                     </div>
                 </div>
             </DialogTrigger>
-            <DialogContent className="flex justify-center items-center w-5/12 h-1/2 px-[5rem] gap-[4rem] bg-zinc-950">
-                <div className="w-1/3 flex flex-col items-center">
+            <DialogContent className="flex justify-center items-center w-1/2 h-1/2 pr-[4rem] gap-[4rem] bg-zinc-950">
+                <div className="w-1/3 flex flex-col items-center h-full">
                     <SkinContainer name={information.activeAccountUsername} cape={`https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.cape_file}`} />
                 </div>
-                <div className="w-2/3 flex flex-col justify-between items-start h-full pb-[4rem]">
-                    <div className="flex flex-col justify-evenly h-full">
+                <div className="w-2/3 flex flex-col justify-evenly items-start h-full pt-[3rem] pb-[1.25rem]">
+                    <div className="flex flex-col justify-between h-full">
                         <div className="flex flex-col gap-4">
                             <div className="gap-2">
-                                <p className="text-3xl font-basically font-semibold">{cape.name}</p>
-                                <p className="text-xl font-basically text-zinc-400">by {cape.expand.author.name}</p>
+                                <p className="text-3xl font-mc font-semibold">{cape.name}</p>
+                                <p className="text-lg font-basically text-zinc-400">by {cape.expand.author.name}</p>
                             </div>
                             <p>This item adds a custom cape and elytra to the back of your Minecraft character, visible to all other players using wardrobe.gg with Optifine.</p>
                         </div>
-                        <div className="w-full">
-                            {!information?.activeAccountUsername ?
+                        <div className="w-full flex gap-4">
+                            <button className={`aspect-square h-full border-2 border-[#8D9096] flex justify-center items-center ${isAddedToLibrary === true && 'bg-white border-white'}`} onClick={addToLibrary}>
+                                <Image src={isAddedToLibrary === true ? '/assets/icons/library-selected.png' : '/assets/icons/library-unselected.png'} height={34} width={34} className={`h-1/2 w-1/3 ${isAddedToLibrary === true && 'brightness-0'}`}/>
+                            </button>
+                            {!information?.activeAccountUsername && cape.active === false ?
                             <Link href={'/login?c=true'} target="_blank"><Button className="w-full rounded-none text-lg bg-zinc-800 hover:bg-zinc-800/80 text-white font-mc">Login to equip</Button></Link>
                             :
                             (isEquipping === 0
@@ -240,12 +283,11 @@ function CapeItem({ cape, information }) {
                                 ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={() => setIsOpen(false)}><CheckIcon className="size-4 mr-2" />Equipped!</Button>
                             : isEquipping === 3 
                                 ? <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc" onClick={() => setIsOpen(false)}>An error occured.</Button>
-                                : <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={() => setIsOpen(false)}><CheckIcon className="size-4 mr-2" />Already Equipped</Button>
+                                : <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc" onClick={() => setIsOpen(false)}>Equipped</Button>
                             ))}
                         </div>
                     </div>
                     
-                    <span className="font-mc text-zinc-500">Equipped {fauxApplications === -1 ? cape.applications : fauxApplications} {fauxApplications !== -1 && (fauxApplications === 1 ? 'time' : 'times')} {fauxApplications === -1 && (cape.applications === 1 ? 'time' : 'times')}</span>
                 </div>
             </DialogContent>
         </Dialog>
@@ -261,8 +303,10 @@ export function SkinContainer({ name, cape }) {
             canvas: document.getElementById('skin_container'),
             width: 275,
             height: 400,
-            enableControls: true
+            enableControls: false
         });
+
+        skinViewer.animation = new IdleAnimation();
 
         if (name === undefined) {
             skinViewer.loadSkin('/assets/skinBackground/Skin.png')
@@ -277,6 +321,7 @@ export function SkinContainer({ name, cape }) {
             skinViewer.loadCape(cape);
         }
 
+        
 
         skinViewer.playerObject.rotateY(150 * (Math.PI / 180));
         skinViewer.playerObject.rotateX(3 * (Math.PI / 180));
@@ -288,14 +333,14 @@ export function SkinContainer({ name, cape }) {
 
     return (
         <div>
-            <div className="rounded-r-2xl w-full flex flex-col justify-start items-center h-full">
+            <div className="w-full flex flex-col justify-start items-center h-full overflow-hidden">
                 <canvas id="skin_container" className={`bg-center bg-cover`}></canvas>
-                <div className="w-full flex justify-center items-center gap-2 -mt-[2rem]">
-                    <Button size="icon" className="bg-transparent hover:bg-zinc-900 rounded-none" onClick={() => setElytra(false)}>
-                        <Image src={'/assets/icons/cape.png'} width={128} height={112} className={`h-[25px] w-[25px] object-contain transition-all duration-200 ${!elytra ? 'brightness-200' : 'hover:brightness-125'}`}/>
+                <div className="w-full flex justify-center items-center gap-2">
+                    <Button size="icon" className="bg-transparent hover:bg-zinc-900 rounded-none outline-none" onClick={() => setElytra(false)}>
+                        <Image src={'/assets/icons/cape.png'} width={128} height={112} className={`outline-none h-[25px] w-[25px] object-contain transition-all duration-200 ${!elytra ? 'brightness-200' : 'hover:brightness-125'}`}/>
                     </Button>
-                    <Button size="icon" className="bg-transparent hover:bg-zinc-900 rounded-none" onClick={() => setElytra(true)}>
-                        <Image src={'/assets/icons/elytra.png'} width={128} height={112} className={`h-[25px] w-[25px] object-contain transition-all duration-200 ${elytra ? 'brightness-200' : 'hover:brightness-125'}`}/>
+                    <Button size="icon" className="bg-transparent hover:bg-zinc-900 rounded-none outline-none" onClick={() => setElytra(true)}>
+                        <Image src={'/assets/icons/elytra.png'} width={128} height={112} className={`outline-none h-[25px] w-[25px] object-contain transition-all duration-200 ${elytra ? 'brightness-200' : 'hover:brightness-125'}`}/>
                     </Button>
                 </div>
             </div>
