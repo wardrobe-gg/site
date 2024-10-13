@@ -20,14 +20,24 @@ import axios from "axios";
 import { CheckIcon, LibraryIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+
 export default function CapePage() {
     const pb = new Pocketbase('https://db.wardrobe.gg');
     const [capes, setCapes] = useState([]);
     const [filters, setFilters] = useState(['4avkinm8p2qorvg']);
     const [potentialFilters, setPotentialFilters] = useState([]);
     const [information, setInformation] = useState({});
-
     const [search, setSearch] = useState('');
+    const searchTimeout = useRef(null); // For debounce
+
+    // Debounced search function
+    const handleSearch = (e) => {
+        const { value } = e.target;
+        clearTimeout(searchTimeout.current);
+        searchTimeout.current = setTimeout(() => {
+            setSearch(value);
+        }, 500); // 500ms delay for debounce
+    };
 
     useEffect(() => {
         const getStuff = async () => {
@@ -59,16 +69,16 @@ export default function CapePage() {
                 requestKey: randomBytes(4).toString('hex'),
                 expand: 'author'
             });
-    
+
             let items = getTheDarnCapes.items.map(cape => ({
                 ...cape,
                 url: `https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.render}`,
                 inLibrary: false, // Initially mark as not in library
                 active: false // Set initial active status to false
             }));
-    
+
             setCapes(items); // Set capes first
-    
+
             // Check if the user is logged in and get their library of cloaks
             const activeAccount = JSON.parse(localStorage.getItem('activeAccount'))?.user;
             if (activeAccount) {
@@ -77,23 +87,23 @@ export default function CapePage() {
                         userID: activeAccount
                     }
                 });
-    
+
                 const libraryCapes = userCapeLibrary.data.capes;
                 console.log(libraryCapes);
-    
+
                 const updatedItems = items.map(item => {
                     // Find the cape in the user's library
                     const libraryCape = libraryCapes.find(libraryCape => libraryCape.id === item.id);
                     const inLibrary = !!libraryCape; // Check if cape is in library
                     const active = libraryCape ? libraryCape.active : false; // Get active status if it exists
-    
+
                     return { ...item, inLibrary, active };
                 });
-    
+
                 setCapes(updatedItems); // Update capes again after checking the library
             }
         };
-    
+
         getCapes();
     }, [filters, search]);
 
@@ -105,7 +115,6 @@ export default function CapePage() {
         }
     };
 
-
     useEffect(() => {
         const updateInformation = () => {
             let information = {
@@ -116,7 +125,7 @@ export default function CapePage() {
         };
 
         // Update information initially
-        updateInformation()
+        updateInformation();
 
         // Set up an interval to check for localStorage changes
         const interval = setInterval(() => {
@@ -133,7 +142,7 @@ export default function CapePage() {
             <div className="w-full h-[81.8vh] flex gap-12 pt-[3rem]">
                 <div className="w-[453px] h-full border-r-2 border-t-2 flex flex-col items-center p-12">
                     <div className="flex flex-col gap-8">
-                        <Input className="rounded-none font-basically text-xl" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+                        <Input className="rounded-none font-basically text-xl" placeholder="Search" onChange={handleSearch} />
                         <div className="flex flex-col gap-4">
                             {potentialFilters.map((filter, index) => (
                                 <div
