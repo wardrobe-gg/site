@@ -18,7 +18,7 @@ export default async function getCloak(req, res) {
             return res.status(200).json({capeID: expandedCape.id, url: `https://db.wardrobe.gg/api/files/uploaded_capes/${expandedCape.id}/${expandedCape.cape_file}`})
         }
         else {
-            return res.status(404).send('User does not have a wardrobe.gg cape.')
+            return res.status(201).send('User does not have a wardrobe.gg cape.')
         }
 
     }

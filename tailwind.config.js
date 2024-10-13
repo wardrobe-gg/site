@@ -10,8 +10,8 @@ module.exports = {
   prefix: "",
   theme: {
     boxShadow: {
-      'ciwhite': '0 0 20px -3px rgba(255,255,255,0.05)',
-      'cipink': '0 0 7px 3px rgba(255, 52, 116,1)',
+      'ciwhite': '0 0 20px 3px rgba(255,255,255,0.05)',
+      'cipink': '0 0 7px 1px rgba(255, 52, 116,0.5)',
     },
     container: {
       center: true,

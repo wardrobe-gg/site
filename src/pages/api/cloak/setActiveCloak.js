@@ -39,20 +39,26 @@ export default async function setActiveCloakSlot(req, res) {
 
     try {
         // Check if the slot exists
-        const slot = await pb.collection('cape_slot').getOne(slotID);
-        if (!slot) {
-            return res.status(404).json({ message: 'Cape slot not found.' });
+        if (slotID !== 'none') {
+            const slot = await pb.collection('cape_slot').getOne(slotID);
+            if (!slot) {
+                return res.status(404).json({ message: 'Cape slot not found.' });
+            }
+            // Optional: Verify that the slot belongs to the active account (add your logic here)
+            if (slot.user !== activeAccount) {
+                return res.status(403).json({ message: 'You are not authorized to change this slot.' });
+            }
+
+            // Update the user's active slot
+            await pb.collection('users').update(activeAccount, { cape: slotID });
+
         }
 
-        // Optional: Verify that the slot belongs to the active account (add your logic here)
-        if (slot.user !== activeAccount) {
-            return res.status(403).json({ message: 'You are not authorized to change this slot.' });
+        else {
+            await pb.collection('users').update(activeAccount, { cape: null });
         }
-
-        // Update the user's active slot
-        await pb.collection('users').update(activeAccount, { cape: slotID });
-
-        return res.status(200).json({ message: 'Cape slot updated successfully.' });
+        
+        return res.status(200).json({ message: 'Cape updated successfully.' });
     } catch (error) {
         // Error handling based on the type of error
         if (error.message.includes('404')) {

@@ -252,10 +252,12 @@ function CapeItem({ cape, information }) {
                 <div>
                     <div className="flex flex-col gap-2 cursor-pointer">
                         <div className="bg-gradient-to-t from-zinc-800 via-zinc-900 to-zinc-950 hover:from-custom-bpink aspect-square border-2 border-[#41414A] hover:border-custom-bpink cursor-pointer shadow-ciwhite hover:shadow-cipink transform-all duration-150 overflow-hidden">
-                            <img
+                            <Image
+                                width={1080}
+                                height={1080}
                                 src={cape.url}
                                 alt={cape.name}
-                                className="scale-[130%] translate-x-1.5 translate-y-2"
+                                className="scale-[150%] translate-x-1.5 translate-y-2"
                             />
                         </div>
                         <div className="flex justify-between px-1 font-mc">
@@ -278,11 +280,11 @@ function CapeItem({ cape, information }) {
                             <p>This item adds a custom cape and elytra to the back of your Minecraft character, visible to all other players using wardrobe.gg with Optifine.</p>
                         </div>
                         <div className="w-full flex gap-4">
-                            <button className={`aspect-square h-full border-2 border-[#41414A] flex justify-center items-center ${isAddedToLibrary === true && 'bg-white border-white'}`} onClick={addToLibrary}>
+                            {information?.activeAccountUsername && <button className={`aspect-square h-full border-2 border-[#41414A] flex justify-center items-center ${isAddedToLibrary === true && 'bg-white border-white'}`} onClick={addToLibrary}>
                                 <Image src={isAddedToLibrary === true ? '/assets/icons/library-selected.png' : '/assets/icons/library-unselected.png'} height={34} width={34} className={`h-1/2 w-1/3 ${isAddedToLibrary === true && 'brightness-0'}`}/>
-                            </button>
+                            </button>}
                             {!information?.activeAccountUsername && cape.active === false ?
-                            <Link href={'/login?c=true'} target="_blank"><Button className="w-full rounded-none text-lg bg-zinc-800 hover:bg-zinc-800/80 text-white font-mc">Login to equip</Button></Link>
+                            <Link href={'/login?c=true'} target="_blank" className="w-full"><Button className="w-full rounded-none text-lg bg-zinc-800 hover:bg-zinc-800/80 text-white font-mc">Login to equip</Button></Link>
                             :
                             (isEquipping === 0
                                 ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={equipCloak}>Equip</Button>

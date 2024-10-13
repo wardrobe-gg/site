@@ -11,6 +11,7 @@ export default function Render() {
 
             // Fetch capes that haven't been rendered yet
             const capesToRender = await pb.collection('uploaded_capes').getFullList({
+                filter: 'render = null'
             });
 
             // Create a SkinViewer instance for rendering
