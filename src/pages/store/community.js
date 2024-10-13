@@ -260,7 +260,7 @@ function SkinContainer({ name, cape }) {
             canvas: document.getElementById('skin_container'),
             width: 275,
             height: 400,
-            enableControls: true
+            enableControls: false
         });
 
         skinViewer.animation = new IdleAnimation();
