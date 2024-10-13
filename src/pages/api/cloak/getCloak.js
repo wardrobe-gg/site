@@ -11,10 +11,11 @@ export default async function getCloak(req, res) {
     await pb.admins.authWithPassword(process.env.PB_ADMIN_EMAIL, process.env.PB_ADMIN_PASS);
 
     try {
-        const userRecord = await pb.collection('users').getOne(userID, {expand: 'cape'});
+        const userRecord = await pb.collection('users').getOne(userID, {expand: 'cape, cape.cape'});
 
-        if (userRecord?.cape) {
-            return res.status(200).json({capeID: userRecord.cape, url: `https://db.wardrobe.gg/api/files/uploaded_capes/${userRecord.expand.cape.id}/${userRecord.expand.cape.cape_file}`})
+        if (userRecord?.expand?.cape?.expand?.cape) {
+            let expandedCape = userRecord.expand.cape.expand.cape
+            return res.status(200).json({capeID: expandedCape.id, url: `https://db.wardrobe.gg/api/files/uploaded_capes/${expandedCape.id}/${expandedCape.cape_file}`})
         }
         else {
             return res.status(404).send('User does not have a wardrobe.gg cape.')

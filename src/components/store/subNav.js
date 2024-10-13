@@ -98,7 +98,7 @@ function SubNavItem({requiredLink, name}) {
         requiredLink === router.pathname ?
         (
             <Link href={requiredLink}>
-                <div className="h-full border border-zinc-200 text-zinc-200 flex justify-center items-center px-[1rem] text-xl font-bold">
+                <div className="h-full border-2 border-zinc-200 text-zinc-200 flex justify-center items-center px-[1rem] text-xl font-bold">
                     {name}
                 </div>
             </Link>
@@ -106,7 +106,7 @@ function SubNavItem({requiredLink, name}) {
         :
         (
             <Link href={requiredLink}>
-                <div className="h-full border border-zinc-700 text-zinc-400 flex justify-center items-center px-[1rem] text-xl font-medium">
+                <div className="h-full border-2 border-zinc-700 text-zinc-400 flex justify-center items-center px-[1rem] text-xl font-medium">
                     {name}
                 </div>
             </Link>

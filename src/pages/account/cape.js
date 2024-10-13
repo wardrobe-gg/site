@@ -1,14 +1,15 @@
 import AccountNavigation from "@/components/account/subNav";
 import { NewHeader } from "@/components/main/header";
-import { act, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { FlyingAnimation, SkinViewer, WalkingAnimation } from "skinview3d";
+import { SkinViewer, WalkingAnimation, PlayerAnimation, IdleAnimation, RunningAnimation } from "skinview3d";
 
 export default function AccountPage() {
     const [capeURL, setCapeURL] = useState('');
-    const [activeAccount, setActiveAccount] = useState('');
+    const [activeAccount, setActiveAccount] = useState({});
+    const [allCapes, setAllCapes] = useState([]);
 
     useEffect(() => {
         const getInfo = async () => {
@@ -16,17 +17,21 @@ export default function AccountPage() {
                 const activeAccount = typeof window !== "undefined" && localStorage.getItem('activeAccount');
                 if (activeAccount) {
                     const parsedAccount = JSON.parse(activeAccount);
-                    setActiveAccount(parsedAccount.username);
+                    setActiveAccount(parsedAccount);
+
                     const response = await axios.get('/api/cloak/getCloak', {
                         params: { userID: parsedAccount.user }
                     });
 
-                    console.log(response.data.url)
                     if (response.data && response.data.url) {
                         setCapeURL(response.data.url);
-                    } else {
-                        console.error("Cape URL not found in response");
                     }
+
+                    const getAllCloaks = await axios.get('/api/cloak/getAllCloaks', {
+                        params: { userID: parsedAccount.user }
+                    });
+
+                    setAllCapes(getAllCloaks.data.capes);
                 } else {
                     console.error("No active account found in localStorage");
                 }
@@ -40,11 +45,46 @@ export default function AccountPage() {
         }
     }, []);
 
+    const changeSlot = async (id, url) => {
+        // Update the `allCapes` state, setting only the clicked cape to active
+        const updatedCapes = allCapes.map(cape =>
+            cape.slotID === id ? { ...cape, active: true } : { ...cape, active: false }
+        );
+        setAllCapes(updatedCapes);
+        setCapeURL(url)
+
+        console.log(id);
+
+        const setActiveCloak = await axios.post('/api/cloak/setActiveCloak', {
+            activeAccount: activeAccount.user,
+            slotID: id
+        })
+        console.log(setActiveCloak)
+    };
+
     return (
         <>
             <NewHeader />
             <AccountNavigation />
-            {capeURL && activeAccount && <SkinContainer name={activeAccount} cape={capeURL} />}
+            <div className="w-screen grid grid-cols-12 gap-[4rem] p-[4rem] h-[80vh]">
+                <div className="col-span-4 row-span-full border-4 rounded-none overflow-hidden">
+                    {capeURL && activeAccount && <SkinContainer name={activeAccount.username} cape={capeURL} className="w-full" />}
+                </div>
+                <div className="w-full flex flex-col col-span-8 py-4">
+                    <span className="text-3xl font-mc ">Your Library</span>
+                    <span className="font-basically">Here, you can view all of the cloaks that you&apos;ve previously equipped. Click on one to change back!.</span>
+                    <div className="grid grid-cols-4 gap-x-8 py-[2rem] max-h-[65vh] overflow-y-scroll mt-[10px]">
+                        {allCapes.length > 0 && allCapes.map((cape, index) => (
+                            <div key={index} className={`flex flex-col items-center gap-2 ${cape.active === false && 'cursor-pointer'}`} onClick={() => changeSlot(cape.slotID, cape.capeURL)}>
+                                <div className={`w-full ${cape.active === true ? 'border-4 border-custom-bpink shadow-cipink' : 'border-zinc-800 shadow-ciwhite'} transition-all duration-200 border min-h-[20vh] p-1 flex flex-col justify-center items-center aspect-square`}>
+                                    <Image src={cape.render} width={1080} height={1080} className="scale-125" />
+                                </div>
+                                <span className="text-xl text-left w-full font-mc">{cape.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </>
     );
 }
@@ -56,9 +96,11 @@ function SkinContainer({ name, cape }) {
         const skinViewer = new SkinViewer({
             canvas: document.getElementById('skin_container'),
             width: 600,
-            height: 400,
+            height: 675,
             enableControls: true
         });
+
+        skinViewer.animation= new IdleAnimation();
 
         if (!name) {
             skinViewer.loadSkin('/assets/skinBackground/Skin.png');
@@ -79,7 +121,6 @@ function SkinContainer({ name, cape }) {
         skinViewer.camera.rotateX(-22.5 * (Math.PI / 180));
         skinViewer.camera.translateX(-1.5);
 
-        // Cleanup when component unmounts
         return () => {
             skinViewer.dispose();
         };

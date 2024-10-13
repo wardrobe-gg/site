@@ -133,7 +133,8 @@ export default async function completeSignup(req, res) {
                 username: MCUsername,
                 uuid: MCUUID,
                 email: getMe.data.email,
-                msid: getMe.data.id
+                msid: getMe.data.id,
+                maxCapes: 2
             });
 
             await linkAccountToWaiting(pb, state, accountCreation.id);

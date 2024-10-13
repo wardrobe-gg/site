@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { CheckIcon, Loader2 } from "lucide-react";
-import { SkinViewer, WalkingAnimation, FlyingAnimation } from "skinview3d";
+import { SkinViewer, WalkingAnimation, FlyingAnimation, IdleAnimation } from "skinview3d";
 
 
 
@@ -68,7 +68,31 @@ export default function CapePage() {
                 i++;
             }
 
-            setCapes(getTheDarnCapes.items)
+            setCapes(items)
+
+            // Check if the user is logged in and get their library of cloaks
+            const activeAccount = JSON.parse(localStorage.getItem('activeAccount'))?.user;
+            if (activeAccount) {
+                const userCapeLibrary = await axios.get('/api/cloak/getAllCloaks', {
+                    params: {
+                        userID: activeAccount
+                    }
+                });
+    
+                const libraryCapes = userCapeLibrary.data.capes;
+                console.log(libraryCapes);
+    
+                const updatedItems = items.map(item => {
+                    // Find the cape in the user's library
+                    const libraryCape = libraryCapes.find(libraryCape => libraryCape.id === item.id);
+                    const inLibrary = !!libraryCape; // Check if cape is in library
+                    const active = libraryCape ? libraryCape.active : false; // Get active status if it exists
+    
+                    return { ...item, inLibrary, active };
+                });
+    
+                setCapes(updatedItems); // Update capes again after checking the library
+            }
         }
 
         getCapes();
@@ -116,6 +140,17 @@ export default function CapePage() {
 function CapeItem({ cape, information }) {
     const [isEquipping, setIsEquipping] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
+    const [isAddedToLibrary, setIsAddedToLibrary] = useState(cape?.inLibrary === true ? true : false);
+
+    useEffect(() => {
+        setIsAddedToLibrary(cape.inLibrary); // Ensure local state reflects prop changes
+    }, [cape.inLibrary]);
+
+    useEffect(() => {
+        if (cape.active === true) {
+            setIsEquipping(4);
+        }
+    }, [cape.active])
 
     const equipCloak = async () => {
         if (information.activeAccountUsername) {
@@ -143,6 +178,20 @@ function CapeItem({ cape, information }) {
             alert('Stop trying to break things :/');
         }
     }
+    const addToLibrary = async () => {
+        try {
+            setIsAddedToLibrary(!isAddedToLibrary);
+            await axios.post('/api/cloak/addToLibrary', {
+                cloakId: cape.id,
+                activeAccount: JSON.parse(localStorage.getItem('activeAccount'))?.user
+            })
+        }
+        catch (e) {
+            console.error(e);
+            setIsAddedToLibrary(false);
+            toast.error('An error occured.')
+        }
+    }
 
 
     return (
@@ -150,45 +199,52 @@ function CapeItem({ cape, information }) {
             <DialogTrigger asChild>
                 <div>
                     <div className="flex flex-col gap-2 cursor-pointer">
-                        <div className="bg-gradient-to-t from-zinc-800 via-zinc-900 to-zinc-950 hover:from-custom-bpink aspect-square border-2 border-[#41414A] hover:border-custom-bpink cursor-pointer shadow-[0_0_100px_5px_rgba(255,255,255,0.1)] transform-all duration-150">
+                        <div className="bg-gradient-to-t from-zinc-800 via-zinc-900 to-zinc-950 hover:from-custom-bpink aspect-square border-2 border-[#41414A] hover:border-custom-bpink cursor-pointer shadow-ciwhite hover:shadow-cipink transform-all duration-150 overflow-hidden">
                             <img
                                 src={cape.url}
                                 alt={cape.name}
                                 className="scale-[130%] translate-x-1.5 translate-y-2"
                             />
                         </div>
-                        <div className="flex justify-between px-1 font-mc gap-4">
+                        <div className="flex justify-between px-1 font-mc">
                             <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">{cape.name}</p>
-                            <p className="text-[#8D9096] max-w-[7rem] whitespace-nowrap overflow-hidden overflow-ellipsis">by {cape.expand.author.name}</p>
                         </div>
                     </div>
                 </div>
             </DialogTrigger>
-            <DialogContent className="flex justify-center items-center w-5/12 h-1/2 px-[5rem] gap-[4rem] bg-zinc-950">
-                <div className="w-1/3 flex flex-col items-center">
+            <DialogContent className="flex justify-center items-center w-1/2 h-1/2 pr-[4rem] gap-[4rem] bg-zinc-950">
+                <div className="w-1/3 flex flex-col items-center h-full">
                     <SkinContainer name={information.activeAccountUsername} cape={`https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.cape_file}`} />
                 </div>
-                <div className="w-2/3 flex flex-col justify-evenly items-start h-full pb-[4rem]">
-                    <div className="flex flex-col gap-4">
-                        <div className="gap-2">
-                            <p className="text-3xl font-basically font-semibold">{cape.name}</p>
-                            <p className="text-xl font-basically text-zinc-400">by {cape.expand.author.name}</p>
+                <div className="w-2/3 flex flex-col justify-evenly items-start h-full pt-[3rem] pb-[1.25rem]">
+                    <div className="flex flex-col justify-between h-full">
+                        <div className="flex flex-col gap-4">
+                            <div className="gap-2">
+                                <p className="text-3xl font-mc font-semibold">{cape.name}</p>
+                                <p className="text-lg font-basically text-zinc-400">by {cape.expand.author.name}</p>
+                            </div>
+                            <p>This item adds a custom cape and elytra to the back of your Minecraft character, visible to all other players using wardrobe.gg with Optifine.</p>
                         </div>
-                        <p>This item adds a custom cape and elytra to the back of your Minecraft character, visible to all other players using wardrobe.gg with Optifine.</p>
+                        <div className="w-full flex gap-4">
+                            <button className={`aspect-square h-full border-2 border-[#8D9096] flex justify-center items-center ${isAddedToLibrary === true && 'bg-white border-white'}`} onClick={addToLibrary}>
+                                <Image src={isAddedToLibrary === true ? '/assets/icons/library-selected.png' : '/assets/icons/library-unselected.png'} height={34} width={34} className={`h-1/2 w-1/3 ${isAddedToLibrary === true && 'brightness-0'}`}/>
+                            </button>
+                            {!information?.activeAccountUsername && cape.active === false ?
+                            <Link href={'/login?c=true'} target="_blank"><Button className="w-full rounded-none text-lg bg-zinc-800 hover:bg-zinc-800/80 text-white font-mc">Login to equip</Button></Link>
+                            :
+                            (isEquipping === 0
+                                ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={equipCloak}>Equip</Button>
+                            :( isEquipping === 1
+                                ? <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc">Equipping...</Button>
+                            : isEquipping === 2
+                                ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={() => setIsOpen(false)}><CheckIcon className="size-4 mr-2" />Equipped!</Button>
+                            : isEquipping === 3 
+                                ? <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc" onClick={() => setIsOpen(false)}>An error occured.</Button>
+                                : <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc" onClick={() => setIsOpen(false)}>Equipped</Button>
+                            ))}
+                        </div>
                     </div>
-                    <div className="w-full">
-                        {!information?.activeAccountUsername ?
-                        <Link href={'/login?c=true'} target="_blank"><Button className="w-full rounded-none text-lg bg-zinc-800 hover:bg-zinc-800/80 text-white font-mc">Login to equip</Button></Link>
-                        :
-                        (isEquipping === 0
-                            ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={equipCloak}>Equip</Button>
-                        :( isEquipping === 1
-                            ? <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc">Equipping...</Button>
-                        : isEquipping === 2
-                            ? <Button className="w-full rounded-none text-lg bg-custom-bpink hover:bg-custom-bpink/80 text-white font-mc" onClick={() => setIsOpen(false)}><CheckIcon className="size-4 mr-2" />Equipped!</Button>
-                        : <Button className="w-full rounded-none text-lg bg-custom-bpink/80 hover:bg-custom-bpink/60 text-white font-mc" onClick={() => setIsOpen(false)}>An error occured.</Button>
-                        ))}
-                    </div>
+                    
                 </div>
             </DialogContent>
         </Dialog>
@@ -206,6 +262,8 @@ function SkinContainer({ name, cape }) {
             height: 400,
             enableControls: true
         });
+
+        skinViewer.animation = new IdleAnimation();
 
         if (name === undefined) {
             skinViewer.loadSkin('/assets/skinBackground/Skin.png')
