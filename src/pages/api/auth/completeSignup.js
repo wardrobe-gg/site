@@ -19,7 +19,7 @@ export default async function completeSignup(req, res) {
     try {
         await pb.admins.authWithPassword(process.env.PB_ADMIN_EMAIL, process.env.PB_ADMIN_PASS);
 
-        let redirect_uri = process.env.NODE_ENV === 'production' ? 'https://wardrobe.gg/oauth2-redirect' : 'http://localhost:3000/oauth2-redirect';
+        let redirect_uri = process.env.OAUTHREDIRECT;
 
         // Exchange authorization code for access token
         const tokenResponse = await axios.post('https://login.microsoftonline.com/consumers/oauth2/v2.0/token',

@@ -15,6 +15,7 @@ export default function Login() {
     const router = useRouter();
     const {c} = router.query;
     const [environment, setEnvironment] = useState('');
+    const [redirect, setRedirect] = useState('');
     const [isClicked, setIsClicked] = useState(false);
     const [accountCreated, setAccountCreated] = useState(false);
 
@@ -25,6 +26,7 @@ export default function Login() {
         const getEnvironment = async () => {
             const envResponse = await axios.get('/api/getEnvironment');
             setEnvironment(envResponse.data.environment);
+            setRedirect(envResponse.data.oauthRedirect)
         }
 
         getEnvironment();
@@ -45,8 +47,7 @@ export default function Login() {
             localStorage.setItem('provider', JSON.stringify(authMethods.authProviders[0]));
     
             let scope = "XboxLive.signin XboxLive.offline_access User.Read";
-            let redirect_uri = environment === 'production' ? 'https://wardrobe.gg/oauth2-redirect' : 'http://localhost:3000/oauth2-redirect';
-            let authURL = (authMethods.authProviders[0].authUrl).replace('&scope=User.Read', `&scope=${encodeURIComponent(scope)}`) + encodeURIComponent(redirect_uri);
+            let authURL = (authMethods.authProviders[0].authUrl).replace('&scope=User.Read', `&scope=${encodeURIComponent(scope)}`) + encodeURIComponent(redirect);
     
             window.open(authURL, '_blank');
 
