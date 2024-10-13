@@ -142,7 +142,7 @@ export default function CapePage() {
             <div className="w-full h-[81.8vh] flex gap-12 pt-[3rem]">
                 <div className="w-[453px] h-full border-r-2 border-t-2 flex flex-col items-center p-12">
                     <div className="flex flex-col gap-8">
-                        <Input className="rounded-none font-basically text-xl" placeholder="Search" onChange={handleSearch} />
+                        <Input className="rounded-none font-basically text-lg py-6 px-4 border-[#41414A]" placeholder="Search" onChange={handleSearch} />
                         <div className="flex flex-col gap-4 pl-[8px]">
                             {potentialFilters.map((filter, index) => (
                                 <div
