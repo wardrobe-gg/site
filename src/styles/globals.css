@@ -70,7 +70,7 @@
 
 @font-face {
   font-family: 'Minecraft';
-  src: url('/fonts/Ranyth5x_BIG.ttf') format('truetype');
+  src: url('/fonts/Ranyth.ttf') format('truetype');
   font-weight: 400; /* This font only has normal weight */
   font-style: normal;
   font-display: swap;
