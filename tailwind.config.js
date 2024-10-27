@@ -13,6 +13,9 @@ module.exports = {
       'ciwhite': '0 0 20px 3px rgba(255,255,255,0.05)',
       'cipink': '0 0 7px 1px rgba(255, 52, 116,0.5)',
     },
+    dropShadow: {
+      'ciwhite': '0 0 20px 3px rgba(255,255,255,0.05)',
+    },
     container: {
       center: true,
       padding: "2rem",
