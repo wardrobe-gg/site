@@ -1,7 +1,7 @@
 import { NewHeader } from "@/components/main/header";
 import StoreNavigation from "@/components/store/subNav";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Pocketbase from 'pocketbase';
 import Image from "next/image";
 import {randomBytes} from 'crypto';
@@ -20,127 +20,161 @@ import { CheckIcon } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { SkinViewer, WalkingAnimation, FlyingAnimation, IdleAnimation } from "skinview3d";
 import InfiniteScroll from "react-infinite-scroll-component";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+  } from "@/components/ui/pagination"
 
 
 
 export default function CapePage() {
-    // Official cape page.
     const pb = new Pocketbase('https://db.wardrobe.gg');
     const [capes, setCapes] = useState([]);
-    const [filters, setFilters] = useState([]);
+    const [filters, setFilters] = useState(['4avkinm8p2qorvg']);
     const [potentialFilters, setPotentialFilters] = useState([]);
     const [information, setInformation] = useState({});
+    const [search, setSearch] = useState('');
     const [hasMore, setHasMore] = useState(true); // Track if more items are available
     const [currentPage, setCurrentPage] = useState(1); // Track the current page
+    const searchTimeout = useRef(null); // For debounce
+    const isLoading = capes.length === 0;
+    const [totalPages, setTotalPages] = useState(0);
 
+    const handleSearch = (e) => {
+        const { value } = e.target;
+        clearTimeout(searchTimeout.current);
+        searchTimeout.current = setTimeout(() => {
+            setSearch(value);
+            setCurrentPage(1); // Reset to page 1 when searching
+            setCapes([]); // Reset capes
+        }, 500); // 500ms debounce delay
+    };
 
     const getCapes = async (page) => {
-        const limit = 10;
-        console.log(page)
-        let getTheDarnCapes = await pb.collection('uploaded_capes').getList(page, limit, {
+        const limit = 16;
+        let response = await pb.collection('uploaded_capes').getList(page, limit, {
             filter: `tags!~'4avkinm8p2qorvg'`,
             requestKey: randomBytes(4).toString('hex'),
             expand: 'author'
         });
-    
-        // Map through the fetched capes and format them
-        let items = getTheDarnCapes.items.map(cape => ({
+        setTotalPages(response.totalPages)
+
+        let items = response.items.map(cape => ({
             ...cape,
             url: `https://db.wardrobe.gg/api/files/uploaded_capes/${cape.id}/${cape.render}`,
-            inLibrary: false, // Initially mark as not in library
-            active: false // Set initial active status to false
+            inLibrary: false,
+            active: false
         }));
-    
-        // Check if the user is logged in and get their library of cloaks
+
         const activeAccount = JSON.parse(localStorage.getItem('activeAccount'))?.user;
         if (activeAccount) {
             const userCapeLibrary = await axios.get('/api/cloak/getAllCloaks', {
-                params: {
-                    userID: activeAccount
-                }
+                params: { userID: activeAccount }
             });
-    
             const libraryCapes = userCapeLibrary.data.capes;
-    
-            const updatedItems = items.map(item => {
-                // Find the cape in the user's library
+            items = items.map(item => {
                 const libraryCape = libraryCapes.find(libraryCape => libraryCape.id === item.id);
-                const inLibrary = !!libraryCape; // Check if cape is in library
-                const active = libraryCape ? libraryCape.active : false; // Get active status if it exists
-    
-                return { ...item, inLibrary, active };
+                return { 
+                    ...item, 
+                    inLibrary: !!libraryCape, 
+                    active: libraryCape?.active || false 
+                };
             });
-    
-            if (page === 1 || page === 0) {
-                setCapes([...updatedItems]);
-            }
-            else {
-                const existingCapes = new Set(capes.map(cape => cape.id));
-                const newCapes = updatedItems.filter(item => !existingCapes.has(item.id));
-                if (newCapes.length === 0) {
-                    setHasMore(false);
-                }
-                console.log([...newCapes]);
-                setCapes(prevCapes => [...prevCapes, ...newCapes]); // Append new capes
-            }
-
         }
 
-        setHasMore(getTheDarnCapes.items.length === limit);
+        setCapes(items);
+        setHasMore(response.items.length === limit);
     };
 
     useEffect(() => {
         getCapes(currentPage);
-    }, [currentPage]);
+    }, [filters, search, currentPage]);
 
+    const handlePageChange = (page) => {
+        if (page === 0) {
+            setCurrentPage(1);
+        }
+        else if (page > totalPages) {
+            setCurrentPage(totalPages);
+        }
+        else {
+            setCapes([]);
+            setCurrentPage(page);
+        }
+    };
+
+    const switchFilter = (filterId) => {
+        if (!filters.includes(filterId)) {
+            setFilters(['4avkinm8p2qorvg', filterId]);
+        } else {
+            setFilters(['4avkinm8p2qorvg']);
+        }
+    };
 
     useEffect(() => {
         getCapes(1);
         const updateInformation = () => {
-            let information = {
-                isLoggedIn: (localStorage.getItem('activeAccount')) ? true : false,
+            setInformation({
+                isLoggedIn: !!localStorage.getItem('activeAccount'),
                 activeAccountUsername: JSON.parse(localStorage.getItem('activeAccount'))?.username
-            }
-            setInformation(information)
+            });
         };
 
-        // Update information initially
-        updateInformation()
-
-        // Set up an interval to check for localStorage changes
-        const interval = setInterval(() => {
-            updateInformation();
-        }, 100);
-
+        const interval = setInterval(updateInformation, 100);
         return () => clearInterval(interval);
     }, []);
 
-
-    const fetchMoreData = () => {
-        console.log('next page set.')
-        setCurrentPage(prevPage => prevPage + 1); // Increment page number to fetch more data
-    };
-
     return (
-        <div className="w-screen h-screen m-auto">
+        <div className="w-screen h-screen m-auto overflow-hidden">
             <NewHeader />
             <StoreNavigation />
             <></>
 
-            <div className="w-full h-[81.8vh] flex gap-12 pt-[3rem]">
+            <div className="p-8 w-full grid grid-cols-5 gap-8 h-[78vh] mt-12 overflow-y-scroll no-scrollbar">
                 
-                <InfiniteScroll
-                    dataLength={capes.length} // This is important field to render the next data
-                    next={fetchMoreData}
-                    hasMore={hasMore}
-                    loader={<h4 className="w-full flex justify-center col-span-5 text-center font-mc text-lg py-[3rem]"><Loader2 className="animate-spin mr-2" />Loading...</h4>}
-                    endMessage={<p className="col-span-5 text-center font-mc text-lg py-[3rem]">You&apos;ve reached the end</p>}
-                    className="p-8 w-full grid grid-cols-5 gap-8 h-full overflow-y-scroll"
-                >
-                    {capes.map((cape, index) => (
-                        <CapeItem cape={cape} key={index} information={information} />
-                    ))}
-                </InfiniteScroll>
+                {capes.map((cape, index) => (
+                    <CapeItem cape={cape} key={index} information={information} />
+                ))}
+
+                <div className="col-span-full">
+                        {isLoading ? 
+                            <div className="w-full flex  justify-center gap-4 items-center font-mc text-xl"><Loader2 className="animate-spin" /> Loading</div>
+                        :
+                        <>
+                            <Pagination>
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} />
+                                    </PaginationItem>
+                                    <PaginationItem>
+                                        <PaginationLink isActive={currentPage === 1} onClick={()=> handlePageChange(1)}>1</PaginationLink>
+                                    </PaginationItem>
+                                    {totalPages > 1 && <PaginationItem>
+                                        <PaginationLink isActive={currentPage === 2} onClick={()=> handlePageChange(2)}>2</PaginationLink>
+                                    </PaginationItem>}
+                                    {totalPages > 2 && <PaginationItem>
+                                        <PaginationLink isActive={currentPage === 3} onClick={()=> handlePageChange(3)}>3</PaginationLink>
+                                    </PaginationItem>}
+                                    {totalPages > 3 && 
+                                    <>
+                                    {totalPages > 4 && <PaginationItem>
+                                        <PaginationEllipsis/>
+                                    </PaginationItem>}
+                                    <PaginationItem>
+                                        <PaginationLink isActive={currentPage === totalPages} onClick={() => handlePageChange(totalPages)}>{totalPages}</PaginationLink>
+                                    </PaginationItem></>}
+                                    <PaginationItem>
+                                        <PaginationNext onClick={() => handlePageChange(currentPage + 1)} />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </>}
+                    </div>
             </div>
         </div>
     )
@@ -230,7 +264,7 @@ function CapeItem({ cape, information }) {
                         <div className="flex flex-col gap-4">
                             <div className="gap-2">
                                 <p className="text-3xl font-mc font-semibold">{cape.name}</p>
-                                <p className="text-lg font-basically text-zinc-400">by {cape.expand.author.name}</p>
+                                <p className="text-lg font-basically text-zinc-400">by {cape?.expand?.author?.name ? cape.expand.author.name : 'Unknown'}</p>
                             </div>
                             <p>This item adds a custom cape and elytra to the back of your Minecraft character, visible to all other players using wardrobe.gg with Optifine.</p>
                         </div>
