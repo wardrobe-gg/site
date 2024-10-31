@@ -1,8 +1,11 @@
 [phases.setup]
 nixpkgs = ["bun", "python3"]
 
+[phases.install]
+cmds = ["npm install"]
+
 [phases.build]
-command = "bun install && bun build"
+cmds = ["npm run build"]
 
 [phases.start]
-command = "bun run start"
+cmds = ["npm run start"]
