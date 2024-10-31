@@ -1,5 +1,5 @@
 [phases.setup]
-nixpkgs = ["bun", "python3"]
+nixpkgs = ["node", "python3"]
 
 [phases.install]
 cmds = ["npm install"]
