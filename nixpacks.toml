@@ -1,0 +1,8 @@
+[phases.setup]
+nixpkgs = ["bun", "python3"]
+
+[phases.build]
+command = "bun install && bun build"
+
+[phases.start]
+command = "bun run start"
