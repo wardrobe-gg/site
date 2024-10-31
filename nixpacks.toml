@@ -1,30 +1,12 @@
-{ pkgs ? import <nixpkgs> { } }:
+[phases]
+  [phases.setup]
+  nixpkgs = ["nodejs", "python3"]
 
-pkgs.mkShell {
-  buildInputs = [
-    pkgs.nodejs
-    pkgs.python3
-  ];
+  [phases.install]
+  cmds = ["npm install"]
 
-  shellHook = ''
-    # Install dependencies
-    npm install
-  '';
+  [phases.build]
+  cmds = ["npm run build"]
 
-  phases = [ "installPhase" "buildPhase" "startPhase" ];
-
-  installPhase = ''
-    # Install dependencies
-    npm install
-  '';
-
-  buildPhase = ''
-    # Build the project
-    npm run build
-  '';
-
-  startPhase = ''
-    # Start the project
-    npm run start
-  '';
-}
+  [phases.start]
+  cmds = ["npm run start"]
