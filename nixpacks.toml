@@ -1,2 +1,1 @@
-[phases.setup]
-nixPkgs = ["...", "python"]
+providers = ["...", "python"]
