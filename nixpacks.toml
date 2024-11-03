@@ -10,5 +10,5 @@ aptPkgs = [
     "libxext-dev",
     'libpixman-1-dev',
     'libcairo2-dev',
-    'libpangocairo-1.0-dev'
+    'libpango1.0-dev'
 ]
