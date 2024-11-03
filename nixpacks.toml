@@ -8,5 +8,6 @@ aptPkgs = [
     "libx11-dev",
     "libxi-dev",
     "libxext-dev",
-    'libpixman-1-dev'
+    'libpixman-1-dev',
+    'libcairo2-dev'
 ]
