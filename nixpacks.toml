@@ -14,4 +14,9 @@ aptPkgs = [
     "libglu1-mesa-dev",
     "libgl1-mesa-dev",
     "libgstreamer1.0-dev",
+    "pkg-config",
+]
+commands = [
+    '...',
+    "sed -i '21i#include <cstdint>' node_modules/gl/angle/src/common/angleutils.h"
 ]
