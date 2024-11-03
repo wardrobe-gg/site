@@ -10,5 +10,8 @@ aptPkgs = [
     "libxext-dev",
     'libpixman-1-dev',
     'libcairo2-dev',
-    'libpango1.0-dev'
+    'libpango1.0-dev',
+    "libglu1-mesa-dev",
+    "libgl1-mesa-dev",
+    "libgstreamer1.0-dev",
 ]
