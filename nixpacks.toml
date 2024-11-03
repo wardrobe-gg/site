@@ -1,4 +1,0 @@
-providers=['...', 'python']
-[phases.setup]
-nixPkgs = ['...','python312']
-aptPkgs = ['build-essential']

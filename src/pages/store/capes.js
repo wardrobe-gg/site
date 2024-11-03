@@ -196,12 +196,12 @@ export default function CapePage() {
                                     <PaginationItem>
                                         <PaginationLink isActive={currentPage === 1} onClick={()=> handlePageChange(1)}>1</PaginationLink>
                                     </PaginationItem>
-                                    <PaginationItem>
+                                    {totalPages >= 2 &&<PaginationItem>
                                         <PaginationLink isActive={currentPage === 2} onClick={()=> handlePageChange(2)}>2</PaginationLink>
-                                    </PaginationItem>
-                                    <PaginationItem>
+                                    </PaginationItem>}
+                                    {totalPages >= 3 && <PaginationItem>
                                         <PaginationLink isActive={currentPage === 3} onClick={()=> handlePageChange(3)}>3</PaginationLink>
-                                    </PaginationItem>
+                                    </PaginationItem>}
                                     {totalPages > 3 && 
                                     <>
                                     {totalPages > 4 && <PaginationItem>
