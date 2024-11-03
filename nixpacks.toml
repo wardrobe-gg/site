@@ -9,5 +9,6 @@ aptPkgs = [
     "libxi-dev",
     "libxext-dev",
     'libpixman-1-dev',
-    'libcairo2-dev'
+    'libcairo2-dev',
+    'libpangocairo-1.0-dev'
 ]
