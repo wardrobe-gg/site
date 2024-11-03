@@ -1,3 +1,11 @@
-providers=['...', 'python']
+
+providers = ["...", "python"]
+
 [phases.setup]
-aptPkgs=['...', 'build-essential']
+aptPkgs = [
+    '...',
+    "build-essential",
+    "libx11-dev",
+    "libxi-dev",
+    "libxext-dev"
+]
