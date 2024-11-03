@@ -7,5 +7,6 @@ aptPkgs = [
     "build-essential",
     "libx11-dev",
     "libxi-dev",
-    "libxext-dev"
+    "libxext-dev",
+    'libpixman-1-dev'
 ]
