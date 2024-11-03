@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 
-export default function AccountNavigation() {
+export default function AccountNavigation({currentAccountPage, setCurrentAccountPage}) {
     const router = useRouter();
     const [signedIn, setSignedIn] = useState(false);
     const [accountInfo, setAccountInfo] = useState([]);
@@ -56,12 +56,14 @@ export default function AccountNavigation() {
     return (
         <div className="flex justify-between px-[4rem] py-[0rem] -mt-[1rem]">
             <div className="flex gap-8 w-full">
-                <h2 className="font-mc text-4xl">Account</h2>
+                <h2 className="font-mc text-4xl whitespace-nowrap h-full">The Closet</h2>
 
-                <div className="flex font-basically">
-                    <SubNavItem requiredLink={'/account'} name={'Home'} />
-                    <SubNavItem requiredLink={'/account/cape'} name={'Your Cape'} />
-                    <SubNavItem requiredLink={`/logout?rName=Account&r=${encodeURIComponent(router.pathname)}`} name={'Logout'} />
+                <div className="flex font-basically whitespace-nowrap">
+                    <FakeSubNavItem page={0} name={'Home'} setCurrentAccountPage={setCurrentAccountPage} currentAccountPage={currentAccountPage} />
+                    <FakeSubNavItem page={1} name={'Your Cape'} setCurrentAccountPage={setCurrentAccountPage} currentAccountPage={currentAccountPage} />
+                    <FakeSubNavItem page={2} name={'Your Cosmetics'} setCurrentAccountPage={setCurrentAccountPage} currentAccountPage={currentAccountPage} />
+                    <FakeSubNavItem page={3} name={'Settings'} setCurrentAccountPage={setCurrentAccountPage} currentAccountPage={currentAccountPage} />
+                    <SubNavItem requiredLink={`/logout?rName=Account&r=${encodeURIComponent(router.pathname)}&pState=cAPh${currentAccountPage}`} name={'Logout'} />
                 </div>
             </div>
             <div className="w-full flex items-center justify-end font-basically text-zinc-500 font-medium whitespace-nowrap">
@@ -78,7 +80,7 @@ export default function AccountNavigation() {
                                     {account.username}
                                 </DropdownMenuItem>
                             ))}
-                            <Link href={'/login?c=true'} target="_blank"><DropdownMenuItem><PlusIcon className="size-4 mr-2"/> Add account</DropdownMenuItem></Link>
+                            <Link href={`/login?c=true`} target="_blank"><DropdownMenuItem><PlusIcon className="size-4 mr-2"/> Add account</DropdownMenuItem></Link>
                             <DropdownMenuSeparator />
                             <Link href={'/logout'} target="_blank"><DropdownMenuItem><LogOutIcon className="size-4 mr-2"/> Logout</DropdownMenuItem></Link>
                         </DropdownMenuContent>
@@ -90,6 +92,32 @@ export default function AccountNavigation() {
                 
             </div>
         </div>
+    )
+}
+
+function FakeSubNavItem({page, name, setCurrentAccountPage, currentAccountPage}) {
+
+    const changePage = () => {
+        setCurrentAccountPage(page);
+    }
+
+    return (
+        currentAccountPage === page ?
+        (
+            <div>
+                <div className="w-fit h-full border-2 border-zinc-200 text-zinc-200 flex justify-center items-center px-[1rem] text-xl font-bold">
+                    {name}
+                </div>
+            </div>
+        )
+        :
+        (
+            <div>
+                <div className="w-fit h-full border border-zinc-700 text-zinc-400 flex justify-center items-center px-[1rem] text-xl font-medium" onClick={changePage}>
+                    {name}
+                </div>
+            </div>
+        )
     )
 }
 

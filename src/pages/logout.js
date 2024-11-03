@@ -13,7 +13,7 @@ export default function Logout() {
     const [activeAccount, setActiveAccount] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const {r, rName} = router.query;
+    const {r, rName, pState} = router.query;
 
     useEffect(() => {
         // Load accounts from localStorage when component mounts
@@ -98,7 +98,7 @@ export default function Logout() {
 
                             </div>
                             {r && rName && 
-                            <Link className="flex font-bold" href={r}>
+                            <Link className="flex font-bold" href={`${r}${pState ? `?pState=${pState}` : ''}`}>
                                 <ArrowLeft className="size-6 mr-4"/> Back to {rName}
                             </Link>}
                         </>

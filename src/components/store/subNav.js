@@ -1,4 +1,4 @@
-import { ChevronDown, PlusIcon } from "lucide-react";
+import { ChevronDown, ChevronUp, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router"
 import {
@@ -19,6 +19,7 @@ export default function StoreNavigation() {
     const [accountInfo, setAccountInfo] = useState([]);
     const [activeAccount, setActiveAccount] = useState({});
     const [scrollPosition, setScrollPosition] = useState(0);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     useEffect(() => {
 
@@ -69,8 +70,8 @@ export default function StoreNavigation() {
     };
 
     return (
-        <div className="flex justify-between px-[4rem] py-[0rem] -mt-[1rem]">
-            <div className={`flex w-full ${pathname !== '/store/community' ? 'pl-[3rem] gap-8':'gap-[5rem]'}`}>
+        <div className="relative flex justify-between px-[4rem] py-[0rem] -mt-[1rem] z-0">
+            <div className={`relative z-0 flex w-full ${pathname !== '/store/community' ? 'pl-[3rem] gap-8':'gap-[5rem]'}`}>
                 <h2 className={`font-mc text-4xl fixed left-[4rem] transition-all duration-200 ${pathname === '/store/community' ? 'hidden' : ''} ${scrollPosition >= 100 ? 'translate-x-[6rem] translate-y-[.5rem]' : ''}`}>Store</h2>
                 <h2 className={`select-none font-mc ${pathname !== '/store/community' ? 'text-transparent' : ''} text-4xl`} aria-hidden="true">Store</h2>
                 <div className={`flex font-basically transition-all duration-200 ${pathname !== '/store/community' && scrollPosition >= 100 ? 'translate-x-[4rem]' : ''}`}>
@@ -83,8 +84,8 @@ export default function StoreNavigation() {
                 {signedIn === true ?
                     <p className="flex gap-2">Logged in as 
                     
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild><span className="text-white underline flex">{activeAccount.username} <ChevronDown /></span></DropdownMenuTrigger>
+                    <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                        <DropdownMenuTrigger asChild><span className="text-white underline flex">{activeAccount.username} <ChevronDown className={`transition-all duration-200 ${isDropdownOpen === true ? 'rotate-180' : ''}`} /></span></DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuLabel>{activeAccount.username}</DropdownMenuLabel>
                             <DropdownMenuSeparator />

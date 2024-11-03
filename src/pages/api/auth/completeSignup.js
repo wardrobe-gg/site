@@ -132,7 +132,7 @@ export default async function completeSignup(req, res) {
             const accountCreation = await pb.collection('users').create({
                 username: MCUsername,
                 uuid: MCUUID,
-                email: getMe.data.email,
+                email: getMe.data.mail,
                 msid: getMe.data.id,
                 maxCapes: 2
             });

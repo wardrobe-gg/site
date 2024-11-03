@@ -1,236 +1,7 @@
-import AccountNavigation from "@/components/account/subNav";
-import { NewHeader } from "@/components/main/header";
-import { TextMorph } from "@/components/mp/text-morph";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { SkinViewer, IdleAnimation } from "skinview3d";
-import { useRouter } from "next/router";
-import { clearCart } from "@/components/main/cartUtils";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
-let messages = [
-    [
-        "Welcome back, {username}", 
-        "Lookin' fresh, {username}",
-        "Great to have you again, {username}", 
-        "Looking sharp, {username}", 
-        "Good to see you, {username}", 
-        "You're awesome, {username}", 
-        "Let's do this, {username}", 
-        "Always a pleasure, {username}", 
-        "Welcome, {username}", 
-        "Look who's here, it's {username}", 
-        "We love having you, {username}", 
-        "Right on time, {username}", 
-        "You're back, let's style, {username}", 
-        "Looking ready for action, {username}",
-        "Hello again, {username}", 
-        "Good to have you back, {username}", 
-        "Feeling good today, {username}", 
-        "Here we go again, {username}", 
-        "Ready to rock, {username}", 
-        "Lookin' Swish, {username}"
-    ],
-    [
-        "{username}'s Library"
-    ],
-    [
-        "{username}'s Cosmetics"
-    ],
-    [
-        "Settings"
-    ]
-];
-
-function selectRandomMessage(page) {
-    let array = messages[page];
-    return array[Math.floor(Math.random() * array.length)];
-}
-
-export default function AccountPage() {
-    const router = useRouter();
-    //const {pState} = router.query;
-    const [capeURL, setCapeURL] = useState('undefined');
-    const [activeAccount, setActiveAccount] = useState({});
-    const [allCapes, setAllCapes] = useState([]);
-    const [currentWelcomeText, setCurrentWelcomeText] = useState('Welcome back,');
-    const [currentAccountPage, setCurrentAccountPage] = useState(0);
-    const [thankYouDialog, setThankYouDialog] = useState(false);
-
-
-    useEffect(() => {
-        const getInfo = async () => {
-            try {
-                const activeAccount = typeof window !== "undefined" && localStorage.getItem('activeAccount');
-                if (activeAccount) {
-                    const parsedAccount = JSON.parse(activeAccount);
-                    setActiveAccount(parsedAccount);
-
-                    const response = await axios.get('/api/cloak/getCloak', {
-                        params: { userID: parsedAccount.user }
-                    });
-
-                    if (response.data && response.data.url) {
-                        setCapeURL(response.data.url);
-                    }
-
-                    const getAllCloaks = await axios.get('/api/cloak/getAllCloaks', {
-                        params: { userID: parsedAccount.user }
-                    });
-
-                    setAllCapes(getAllCloaks.data.capes);
-                } else {
-                    console.error("No active account found in localStorage");
-                }
-            } catch (error) {
-                console.error("Error fetching the cape:", error);
-            }
-        };
-
-        if (typeof window !== "undefined") {
-            getInfo();
-            
-            const searchParams = new URLSearchParams(window.location.search);
-            const pState = searchParams.get('pState');
-            const pc = searchParams.get('pc');
-            
-            if (pState?.includes('cAPh')) {
-                setCurrentAccountPage(parseInt(pState.slice(4)));
-            }
-            
-            if (pc === 'false') {
-                setThankYouDialog(true);
-                searchParams.delete('pc');  // Remove pc after processing
-            }
-    
-            // Update the URL without refreshing the page
-            const newUrl = `${window.location.pathname}?${searchParams}`;
-            router.replace(newUrl, undefined, { shallow: true })        
-        }
-    }, []);
-
-    useEffect(() => {
-        setCurrentWelcomeText(selectRandomMessage(currentAccountPage))
-    }, [currentAccountPage]);
-
-    return (
-        <>
-            <NewHeader />
-            <AccountNavigation currentAccountPage={currentAccountPage} setCurrentAccountPage={setCurrentAccountPage} />
-            <Dialog open={thankYouDialog} onOpenChange={setThankYouDialog}>
-                <DialogContent className="w-1/2 h-1/2 flex justify-center items-center">
-                    <div>
-                        <p className="font-mc text-5xl">Thank you!</p>
-                    </div>
-                </DialogContent>
-            </Dialog>
-            <div className="flex flex-col items-center w-screen h-[70vh] p-[4rem]">
-                <h3 className="font-mc flex items-center gap-3">
-                    <TextMorph className="text-2xl">
-                        {currentWelcomeText.replace('{username}', activeAccount.username)}
-                    </TextMorph>
-                </h3>
-                <motion.div>
-                    <SkinContainer capeURL={capeURL} />
-                </motion.div>
-            </div>
-        </>
-    )
-}
-
-function CosmeticItem({
-    text,
-    currentAccountPage,
-    setCurrentAccountPage
-}) {
-    return(
-        <motion.div className="h-[5rem] flex cursor-pointer items-center gap-4" onClick={() => setCurrentAccountPage(1)} >
-            <motion.div
-            animate={{
-                x: currentAccountPage === 0 ? 0 : -600
-            }}
-            className="h-[5rem] w-[5rem] aspect-square p-2 border-2 bg-gradient-to-b from-zinc-900 to-zinc-700">
-                <Image src={'/assets/accountPage/blankCosmetic.png'} width={371} height={151}/>
-            </motion.div>
-            <motion.span className="font-mc whitespace-nowrap">{text}</motion.span>
-        </motion.div>
-    )
-}
-
-function Home({ setCurrentAccountPage }) {
-    return (
-        <div>
-            <button onClick={() => {setCurrentAccountPage(1)}}>Cosmetics</button>
-        </div>
-    )
-}
-
-function CosmeticPage({ setCurrentAccountPage }) {
-    return (
-        <div>
-            <button onClick={() => {setCurrentAccountPage(0)}}>Back</button>
-        </div>
-    )
-}
-
-/* export function SkinContainer({ name, cape, currentAccountPage }) {
-    const [elytra, setElytra] = useState(false);
-
-    useEffect(() => {
-        let skinViewer = new SkinViewer({
-            canvas: document.getElementById('skin_container'),
-            width: currentAccountPage === 0 ? 400 : 200,
-            height:  currentAccountPage === 0 ? 600 : 400,
-            enableControls: false
-        });
-
-        skinViewer.animation = new IdleAnimation();
-
-        if (!name) {
-            skinViewer.loadSkin('/assets/skinBackground/Skin.png');
-        } else {
-            skinViewer.loadSkin(`https://minotar.net/skin/${name}`);
-        }
-
-        if (elytra) {
-            skinViewer.loadCape(cape, { backEquipment: 'elytra' });
-        } else {
-            skinViewer.loadCape(cape);
-        }
-
-        skinViewer.playerObject.rotateY(150 * (Math.PI / 180));
-        skinViewer.playerObject.rotateX(3 * (Math.PI / 180));
-        skinViewer.zoom = 1;
-        skinViewer.camera.translateY(15);
-        skinViewer.camera.rotateX(-22.5 * (Math.PI / 180));
-        skinViewer.camera.translateX(-1.5);
-    }, [name, elytra, cape]);
-
-    return (
-        <motion.canvas
-            id={'skin_container'}
-            className="h-screen absolute left-1/2 transform -translate-x-[48%] -translate-y-3 top-[15%] z-100 scale-[95%]"
-            animate={{
-                scaleZ: currentAccountPage === 0 ? '100%' : '90%'
-            }}
-        ></motion.canvas>
-    );
-} */
-
-
-
-
-
-
-async function SkinContainer({capeURL}) {
+import { useEffect } from "react";
+import MantleRenderer, { ClientPlatformUtils, parseJavaBlockModel } from "mantle-renderer";
+import axios from "axios";
+export default function TestPage() {
     useEffect(() => {
         const doStuff = async () => {
             const canvas = document.getElementById('skin_container');
@@ -247,7 +18,7 @@ async function SkinContainer({capeURL}) {
                         castShadow: true,
                         receiveShadow: false,
                         cloak: {
-                            url: capeURL,
+                            url: "https://db.wardrobe.gg/api/files/t61yanmmzyeybng/llr0zxfojykw79s/leather_drip_HIn0JEtVL8.png",
                             angle: 8 * (Math.PI / 180),
                             frames: 4
                         }
@@ -454,9 +225,10 @@ async function SkinContainer({capeURL}) {
         }
         doStuff();
     }, []);
+
     return (
         <div>
             <canvas id="skin_container" className="w-fit h-fit"></canvas>
-        </div>        
-    )
+        </div>
+    );
 }
